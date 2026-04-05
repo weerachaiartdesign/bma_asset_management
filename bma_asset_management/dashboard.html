@@ -1,0 +1,39 @@
+<!-- version 00132 -->
+<!-- ไฟล์: dashboard.html
+     หน้าที่: ชิ้นส่วนหน้าจอแสดงผลสรุปข้อมูล (Dashboard Fragment) -->
+
+<div class="p-4 pb-24">
+    <!-- ส่วนหัว (Header) -->
+    <header class="flex justify-between items-center mb-6 pt-2">
+        <div>
+            <h1 class="text-2xl font-bold text-green-800">สรุปภาพรวม</h1>
+            <p class="text-xs text-gray-400">อัปเดตล่าสุด: <span id="last-update">-</span></p>
+        </div>
+        <button onclick="loadPage('settings-user')" class="w-10 h-10 rounded-full border-2 border-green-500 p-1">
+            <img src="https://via.placeholder.com/40" class="rounded-full" alt="User">
+        </button>
+    </header>
+
+    <!-- การ์ดตัวเลขสถิติ -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-blue-500">
+            <p class="text-gray-400 text-xs font-medium uppercase">ทรัพย์สินทั้งหมด</p>
+            <p id="total-assets" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500">
+            <p class="text-gray-400 text-xs font-medium uppercase">มูลค่ารวม (บาท)</p>
+            <p id="total-value" class="text-xl font-bold text-gray-800 truncate">0.00</p>
+        </div>
+    </div>
+
+    <!-- พื้นที่แสดงกราฟหรือสถานะ -->
+    <div class="bg-white p-5 rounded-2xl shadow-sm mb-6 min-h-[200px] flex flex-col items-center justify-center">
+        <h3 class="w-full text-left font-bold text-gray-700 mb-4">สถานะการตรวจสอบ</h3>
+        <div class="text-gray-300 italic text-sm">ส่วนแสดงผลกราฟวงกลม</div>
+    </div>
+
+    <!-- ปุ่มทางลัด -->
+    <button onclick="loadPage('asset-import')" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg transition hover:bg-green-700 active:scale-95">
+        <i class="fas fa-plus-circle mr-2"></i> นำเข้าข้อมูลใหม่
+    </button>
+</div>
