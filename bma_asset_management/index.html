@@ -1,81 +1,187 @@
-<!-- version 00133 -->
-
+<!-- version 00002 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BMA Smart Asset Management</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#16a34a">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบบริหารจัดการทรัพย์สิน - Dashboard</title>
+  
+  <!-- PWA & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#004d40">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
-        #loader { position: fixed; inset: 0; background: white; display: flex; justify-content: center; align-items: center; z-index: 100; }
-    </style>
+  <!-- Style Sheets -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
 </head>
-<body>
+<body class="bg-slate-50">
 
-    <div id="loader">
-        <div class="text-center">
-            <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">BMA Smart Asset</p>
+  <!-- หน้าจอโหลดข้อมูล -->
+  <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] transition-opacity duration-500">
+    <div class="spinner mb-4"></div>
+    <p id="loading-text" class="text-emerald-800 font-bold animate-pulse">กำลังเรียกข้อมูลจากระบบทรัพย์สิน...</p>
+  </div>
+
+  <div id="main-content" class="hidden min-h-screen">
+    <!-- Navbar โทนสีเขียว กทม. -->
+    <nav class="bkk-green-gradient text-white shadow-xl sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="bg-white p-1 rounded-lg">
+             <img src="icons/icon-192.png" alt="Logo" class="w-7 h-7" onerror="this.style.display='none'">
+          </div>
+          <span class="font-bold text-lg tracking-tight">Asset Dashboard BKK</span>
         </div>
-    </div>
+        <div class="text-right">
+          <p class="text-[10px] opacity-75 uppercase font-bold tracking-tighter">อัปเดตล่าสุด</p>
+          <p id="last-update" class="text-xs font-semibold">-</p>
+        </div>
+      </div>
+    </nav>
 
-    <div id="app-container"></div>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <!-- การ์ดสรุปจำนวน -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <div class="stat-card border-l-4 border-emerald-600">
+          <p class="label text-emerald-700">ทรัพย์สินทั้งหมด</p>
+          <p id="total-val" class="value">0</p>
+        </div>
+        <div class="stat-card border-l-4 border-teal-500">
+          <p class="label text-teal-600">สภาพปกติ</p>
+          <p id="normal-val" class="value text-emerald-600">0</p>
+        </div>
+        <div class="stat-card border-l-4 border-orange-500">
+          <p class="label text-orange-600">ชำรุด/รอจำหน่าย</p>
+          <p id="broken-val" class="value text-orange-700">0</p>
+        </div>
+      </div>
 
-    <!-- ลำดับสคริปต์สำคัญมาก -->
-    <script src="js/api-config.js"></script>
-    <script src="js/auth.js"></script>
+      <!-- กราฟวิเคราะห์ -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="glass-card p-6 h-[400px]">
+          <h3 class="chart-title">สัดส่วนแยกตามประเภท</h3>
+          <div class="h-72"><canvas id="typeChart"></canvas></div>
+        </div>
+        <div class="glass-card p-6 h-[400px]">
+          <h3 class="chart-title text-emerald-800">แผนกที่มีทรัพย์สินสูงสุด</h3>
+          <div class="h-72"><canvas id="deptChart"></canvas></div>
+        </div>
+      </div>
 
-    <script>
-        async function loadPage(page) {
-            const container = document.getElementById('app-container');
-            const loader = document.getElementById('loader');
-            loader.style.display = 'flex';
+      <!-- ตารางรายการ -->
+      <div class="glass-card overflow-hidden">
+        <div class="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
+          <h3 class="font-bold text-emerald-900 text-sm">รายการทรัพย์สิน (50 อันดับล่าสุด)</h3>
+          <button onclick="location.reload()" class="p-2 hover:bg-emerald-100 rounded-full transition-colors">
+            <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+              <tr>
+                <th class="px-6 py-4">รหัสครุภัณฑ์</th>
+                <th class="px-6 py-4">ชื่อรายการ / รุ่น</th>
+                <th class="px-6 py-4">หน่วยงาน</th>
+                <th class="px-6 py-4 text-center">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+              <!-- ข้อมูลจะถูกฉีดเข้าที่นี่ -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
 
-            try {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                const target = (!isLoggedIn && page !== 'login') ? 'login' : page;
+  <script src="js/api-config.js"></script>
+  <script>
+    let charts = {};
 
-                // ตรวจสอบว่าไฟล์ .html อยู่ในตำแหน่งที่ถูกต้อง
-                const response = await fetch(`${target}.html`);
-                if (!response.ok) throw new Error(`ไม่พบไฟล์ ${target}.html`);
-                
-                const html = await response.text();
-                container.innerHTML = html;
-                
-                window.location.hash = `#/${target}`;
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center min-h-screen p-10 text-center">
-                        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-                        <h2 class="text-xl font-bold text-slate-800">เกิดข้อผิดพลาดในการโหลดหน้าจอ</h2>
-                        <p class="text-slate-500 mt-2">${err.message}</p>
-                        <button onclick="location.reload()" class="mt-6 px-6 py-2 bg-green-600 text-white rounded-xl">ลองใหม่อีกครั้ง</button>
-                    </div>`;
-            } finally {
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
+    async function fetchData() {
+      try {
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+        render(data);
+      } catch (err) {
+        document.getElementById('loading-text').innerHTML = 
+          `<span class="text-red-600">เกิดข้อผิดพลาด: ${err.message}</span><br>
+           <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm">ลองอีกครั้ง</button>`;
+      }
+    }
+
+    function render(data) {
+      document.getElementById('loading').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+      }, 500);
+
+      document.getElementById('last-update').innerText = new Date().toLocaleString('th-TH');
+
+      // คำนวณสรุป
+      const total = data.length;
+      const normal = data.filter(d => ['ปกติ','ใช้งานได้','พร้อมใช้'].some(s => String(d.status).includes(s))).length;
+      const broken = data.filter(d => ['ชำรุด','จำหน่าย','พัง'].some(s => String(d.status).includes(s))).length;
+
+      document.getElementById('total-val').innerText = total.toLocaleString();
+      document.getElementById('normal-val').innerText = normal.toLocaleString();
+      document.getElementById('broken-val').innerText = broken.toLocaleString();
+
+      // สร้างกราฟ
+      const typeData = groupAndSort(data, 'type', 5);
+      const deptData = groupAndSort(data, 'dept', 5);
+
+      updateChart('typeChart', 'doughnut', Object.keys(typeData), Object.values(typeData), ['#065f46', '#059669', '#10b981', '#34d399', '#a7f3d0']);
+      updateChart('deptChart', 'bar', Object.keys(deptData), Object.values(deptData), '#059669');
+
+      // แสดงตาราง
+      document.getElementById('table-body').innerHTML = data.slice(0, 50).map(item => `
+        <tr class="hover:bg-emerald-50/50 transition">
+          <td class="px-6 py-4 font-mono text-[10px] text-slate-400 font-bold">${item.id}</td>
+          <td class="px-6 py-4">
+            <div class="font-bold text-slate-700">${item.type}</div>
+            <div class="text-[10px] text-slate-400">${item.brand || ''} ${item.model || ''}</div>
+          </td>
+          <td class="px-6 py-4 text-slate-500 text-xs">${item.dept}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="px-3 py-1 rounded-full text-[10px] font-bold ${['ปกติ','ใช้งานได้'].some(s => String(item.status).includes(s)) ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}">
+              ${item.status}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function groupAndSort(data, key, limit) {
+      const counts = data.reduce((acc, curr) => {
+        const val = curr[key] || 'ไม่ระบุ';
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+      }, {});
+      return Object.fromEntries(Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, limit));
+    }
+
+    function updateChart(id, type, labels, data, colors) {
+      const ctx = document.getElementById(id).getContext('2d');
+      if (charts[id]) charts[id].destroy();
+      charts[id] = new Chart(ctx, {
+        type: type,
+        data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }] },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { font: { family: 'Sarabun', size: 10 } } } }
         }
+      });
+    }
 
-        window.onload = () => {
-            const page = window.location.hash.replace('#/', '') || 'login';
-            loadPage(page);
-        };
-
-        window.onhashchange = () => {
-            const page = window.location.hash.replace('#/', '');
-            if (page) loadPage(page);
-        };
-    </script>
+    window.onload = fetchData;
+  </script>
 </body>
 </html>
