@@ -1,29 +1,28 @@
-<!-- version 00026 -->
-<!-- Dashboard Content Template -->
+<!-- version 00029 - Desktop Dashboard -->
 <div id="tab-dashboard" class="tab-content space-y-8 animate-in">
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-    <div class="stat-card border-l-4 border-[#12643a]">
-      <p class="label text-[#12643a]">ทรัพย์สินทั้งหมด</p>
-      <p id="total-val" class="value">0</p>
+  <div class="grid grid-cols-3 gap-6">
+    <div class="stat-card border-l-4 border-[#12643a] bg-white p-6 rounded-2xl shadow-sm">
+      <p class="text-xs font-bold text-[#12643a] opacity-70 uppercase">ทรัพย์สินทั้งหมด</p>
+      <p id="total-val" class="text-3xl font-bold mt-1 text-slate-800">0</p>
     </div>
-    <div class="stat-card border-l-4 border-teal-500">
-      <p class="label text-teal-600">ใช้การได้ปกติ (T)</p>
-      <p id="normal-val" class="value text-emerald-600">0</p>
+    <div class="stat-card border-l-4 border-teal-500 bg-white p-6 rounded-2xl shadow-sm">
+      <p class="text-xs font-bold text-teal-600 opacity-70 uppercase">ใช้งานได้ปกติ</p>
+      <p id="normal-val" class="text-3xl font-bold mt-1 text-emerald-600">0</p>
     </div>
-    <div class="stat-card border-l-4 border-orange-500">
-      <p class="label text-orange-600">ทรัพย์สินชำรุด (T)</p>
-      <p id="broken-val" class="value text-orange-700">0</p>
+    <div class="stat-card border-l-4 border-orange-500 bg-white p-6 rounded-2xl shadow-sm">
+      <p class="text-xs font-bold text-orange-600 opacity-70 uppercase">ชำรุด/รอซ่อม</p>
+      <p id="broken-val" class="text-3xl font-bold mt-1 text-orange-700">0</p>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="glass-card p-6 h-[450px] flex flex-col">
-      <h3 class="chart-title">สัดส่วนประเภทรายการทรัพย์สิน (F)</h3>
-      <div class="flex-1 relative mt-4"><canvas id="typeChart"></canvas></div>
+  <div class="grid grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-2xl shadow-sm h-[400px] flex flex-col">
+      <h3 class="font-bold text-slate-700 border-l-4 border-emerald-500 pl-3">สัดส่วนประเภททรัพย์สิน</h3>
+      <div class="flex-1 mt-4"><canvas id="typeChart"></canvas></div>
     </div>
-    <div class="glass-card p-6 h-[450px] flex flex-col">
-      <h3 class="chart-title">จำนวนทรัพย์สินแยกตามหน่วยงาน (R)</h3>
-      <div class="flex-1 relative mt-4"><canvas id="deptChart"></canvas></div>
+    <div class="bg-white p-6 rounded-2xl shadow-sm h-[400px] flex flex-col">
+      <h3 class="font-bold text-slate-700 border-l-4 border-emerald-500 pl-3">แยกตามหน่วยงาน (สูงสุด 8 ลำดับ)</h3>
+      <div class="flex-1 mt-4"><canvas id="deptChart"></canvas></div>
     </div>
   </div>
 </div>
