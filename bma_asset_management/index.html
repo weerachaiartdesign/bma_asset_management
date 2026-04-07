@@ -1,4 +1,4 @@
-<!-- version 00026 -->
+<!-- version 00027 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,9 +9,9 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#12643a">
   
-  <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" href="bmaasset_apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="bmaasset_apple-touch-icon-ipad.png">
+  <!-- Apple Touch Icons - Updated path to icons/ folder -->
+  <link rel="apple-touch-icon" href="icons/bma_asset_apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/bma_asset_apple-touch-icon-ipad.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,7 +30,7 @@
   <aside class="w-64 bkk-sidebar text-white flex-shrink-0 hidden md:flex flex-col">
     <div class="p-6 flex items-center gap-3 border-b border-emerald-700/50">
       <div class="bg-white p-1 rounded-lg shadow-sm">
-        <img src="bmaasset_icon-192.png" alt="BMA Logo" class="w-8 h-8">
+        <img src="icons/bma_asset_icon-192.png" alt="BMA Logo" class="w-8 h-8">
       </div>
       <h1 class="font-bold text-sm tracking-tight leading-tight">BMA Assets<br>Management</h1>
     </div>
@@ -47,7 +47,7 @@
     </nav>
 
     <div class="p-6 border-t border-emerald-700/50 text-[10px] opacity-60">
-      <p>Version 00026</p>
+      <p>Version 00027</p>
       <p id="last-update-sidebar">อัปเดต: -</p>
     </div>
   </aside>
@@ -56,7 +56,7 @@
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
       <div class="md:hidden flex items-center gap-2">
-        <img src="bmaasset_icon-192.png" alt="Logo" class="w-6 h-6">
+        <img src="icons/bma_asset_icon-192.png" alt="Logo" class="w-6 h-6">
         <span class="font-bold text-[#12643a]">BMA Assets</span>
       </div>
       <h2 id="page-title" class="hidden md:block font-bold text-slate-700">Dashboard</h2>
@@ -85,7 +85,6 @@
         globalData = await response.json();
         if (globalData.error) throw new Error(globalData.error);
         
-        // โหลดหน้า Dashboard เป็นหน้าแรก
         await switchTab('dashboard');
       } catch (err) {
         document.getElementById('loading-text').innerHTML = 
@@ -104,16 +103,16 @@
         const html = await response.text();
         mainContent.innerHTML = html;
 
-        // อัปเดต UI Sidebar
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-        document.getElementById('btn-' + (tabId === 'dashboard' ? 'dashboard' : 'inventory')).classList.add('active');
+        const btnId = tabId === 'dashboard' ? 'btn-dashboard' : 'btn-inventory';
+        const targetBtn = document.getElementById(btnId);
+        if(targetBtn) targetBtn.classList.add('active');
+        
         document.getElementById('page-title').innerText = tabId === 'dashboard' ? 'Dashboard' : 'รายการทรัพย์สิน';
 
-        // ปิด loading screen หลังจากโหลดหน้าแรกเสร็จ
         document.getElementById('loading').style.opacity = '0';
         setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 500);
 
-        // ประมวลผลข้อมูลตามหน้าที่เลือก
         renderContent();
       } catch (err) {
         console.error("Failed to load page:", err);
