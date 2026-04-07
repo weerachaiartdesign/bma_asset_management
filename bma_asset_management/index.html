@@ -1,4 +1,4 @@
-<!-- version 00030 -->
+<!-- version 00029 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -46,13 +46,14 @@
     </nav>
 
     <div class="p-6 border-t border-emerald-700/50 text-[10px] opacity-60">
-      <p>Version 00030</p>
+      <p>Version 00029</p>
       <p id="last-update-sidebar">อัปเดต: -</p>
     </div>
   </aside>
 
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
       <div class="md:hidden flex items-center gap-2">
         <img src="icons/bmaasset_icon-192.png" alt="Logo" class="w-6 h-6">
@@ -71,6 +72,7 @@
       <!-- Content loads here -->
     </main>
 
+    <!-- Mobile Bottom Nav -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around py-3 px-6 z-50">
       <button onclick="switchTab('dashboard')" id="m-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-800">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
@@ -119,9 +121,12 @@
         const response = await fetch(fileToLoad);
         const html = await response.text();
         mainContent.innerHTML = html;
+
         updateNavUI(tabId);
+        
         document.getElementById('loading').style.opacity = '0';
         setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 500);
+
         renderContent();
       } catch (err) {
         console.error("Load error:", err);
@@ -132,6 +137,7 @@
       document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
       const desktopBtn = document.getElementById('btn-' + tabId);
       if(desktopBtn) desktopBtn.classList.add('active');
+
       const mDash = document.getElementById('m-btn-dashboard');
       const mInv = document.getElementById('m-btn-inventory');
       if(mDash && mInv) {
@@ -143,6 +149,7 @@
           mDash.classList.add('text-slate-400'); mDash.classList.remove('text-emerald-800');
         }
       }
+      
       document.getElementById('page-title').innerText = tabId === 'dashboard' ? 'Dashboard' : 'รายการทรัพย์สิน';
     }
 
@@ -158,12 +165,15 @@
       const total = globalData.length;
       const normal = globalData.filter(d => ['ปกติ','ใช้งานได้','พร้อมใช้'].some(s => String(d.status).includes(s))).length;
       const broken = globalData.filter(d => ['ชำรุด','จำหน่าย','พัง','ซ่อม'].some(s => String(d.status).includes(s))).length;
+
       ['total-val', 'normal-val', 'broken-val'].forEach((id, idx) => {
         const el = document.getElementById(id);
         if(el) el.innerText = [total, normal, broken][idx].toLocaleString();
       });
+
       const typeData = groupAndSort(globalData, 'type', isMobile ? 5 : 10);
       const deptData = groupAndSort(globalData, 'dept', isMobile ? 5 : 8);
+
       updateChart('typeChart', 'doughnut', Object.keys(typeData), Object.values(typeData), ['#064e3b', '#059669', '#10b981', '#6ee7b7', '#d1fae5']);
       updateChart('deptChart', isMobile ? 'horizontalBar' : 'bar', Object.keys(deptData), Object.values(deptData), '#059669');
     }
@@ -187,7 +197,7 @@
             <div class="flex justify-between items-center pt-3 border-t border-slate-50">
               <div class="text-[10px] leading-tight">
                 <div class="text-slate-500 font-semibold">${item.dept}</div>
-                <div class="text-slate-400 font-normal">${item.owner || '-'}</div>
+                <div class="text-slate-400">${item.owner || '-'}</div>
               </div>
               <div class="font-mono font-bold text-emerald-700 text-sm">฿${Number(item.value).toLocaleString()}</div>
             </div>
@@ -199,19 +209,23 @@
             <td class="px-6 py-4 font-mono text-[11px] text-slate-500 font-bold">${item.id}</td>
             <td class="px-6 py-4 font-bold text-slate-700">${item.type}</td>
             <td class="px-6 py-4 text-xs text-slate-600">
-               <div>${item.brand || ''}</div>
+               <div class="font-semibold">${item.brand || ''}</div>
                <div class="text-[10px] text-slate-400">${item.model || ''}</div>
             </td>
             <td class="px-6 py-4 text-right font-mono">฿${Number(item.value).toLocaleString()}</td>
             <td class="px-6 py-4 text-xs">
                <div class="font-semibold text-slate-700">${item.dept}</div>
-               <div class="text-[10px] text-slate-400 font-normal mt-0.5">${item.owner || '-'}</div>
+               <div class="text-[10px] text-slate-400 italic">${item.owner || '-'}</div>
             </td>
             <td class="px-6 py-4 text-center">
               <span class="px-3 py-1 rounded-full text-[10px] font-bold ${['ปกติ','ใช้งานได้'].some(s => String(item.status).includes(s)) ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}">${item.status}</span>
             </td>
             <td class="px-6 py-4 text-center">
-              ${item.url ? `<a href="${item.url}" target="_blank" class="inline-flex p-2 text-[#12643a] hover:bg-emerald-50 rounded-full transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>` : '<span class="text-slate-300">-</span>'}
+              ${item.url ? `
+                <a href="${item.url}" target="_blank" class="inline-flex p-2 text-[#12643a] hover:bg-emerald-50 rounded-full transition">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+              ` : '<span class="text-slate-300">-</span>'}
             </td>
           </tr>
         `).join('');
@@ -231,8 +245,10 @@
       const canvas = document.getElementById(id);
       if(!canvas) return;
       if (charts[id]) charts[id].destroy();
+      
       const chartType = type === 'horizontalBar' ? 'bar' : type;
       const indexAxis = type === 'horizontalBar' ? 'y' : 'x';
+
       charts[id] = new Chart(canvas.getContext('2d'), {
         type: chartType,
         data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5 }] },
