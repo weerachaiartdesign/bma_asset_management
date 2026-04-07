@@ -1,4 +1,4 @@
-<!-- version 00024 -->
+<!-- version 00025 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -47,7 +47,7 @@
     </nav>
 
     <div class="p-6 border-t border-emerald-700/50 text-[10px] opacity-60">
-      <p>Version 00024</p>
+      <p>Version 00025</p>
       <p id="last-update-sidebar">อัปเดต: -</p>
     </div>
   </aside>
@@ -165,7 +165,7 @@
       document.getElementById('broken-val').innerText = broken.toLocaleString();
 
       const typeData = groupAndSort(globalData, 'type', 10);
-      const deptData = groupAndSort(globalData, 'dept', 10);
+      const deptData = groupAndSort(globalData, 'dept', 8); // ปรับจำนวนหน่วยงานให้พอดีกับกราฟแนวตั้ง
 
       updateChart('typeChart', 'doughnut', Object.keys(typeData), Object.values(typeData), ['#064e3b', '#065f46', '#047857', '#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5', '#ecfdf5']);
       updateChart('deptChart', 'bar', Object.keys(deptData), Object.values(deptData), '#059669');
@@ -212,13 +212,34 @@
       if (charts[id]) charts[id].destroy();
       const options = {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: type === 'doughnut' ? 'right' : 'bottom', labels: { font: { family: 'Sarabun', size: 11 }, usePointStyle: true } } }
+        plugins: { 
+          legend: { 
+            position: type === 'doughnut' ? 'right' : 'bottom', 
+            labels: { font: { family: 'Sarabun', size: 10 }, usePointStyle: true } 
+          } 
+        }
       };
+      
       if (type === 'bar') {
-        options.scales = { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } };
-        options.indexAxis = 'y';
+        options.indexAxis = 'x'; // เปลี่ยนเป็น 'x' เพื่อให้แท่งแสดงผลเป็นแนวตั้ง
+        options.scales = { 
+          y: { 
+            beginAtZero: true, 
+            grid: { color: '#f1f5f9' },
+            ticks: { font: { family: 'Sarabun', size: 10 } }
+          }, 
+          x: { 
+            grid: { display: false }, 
+            ticks: { 
+              font: { family: 'Sarabun', size: 9 },
+              maxRotation: 45,
+              minRotation: 45
+            } 
+          } 
+        };
       }
-      charts[id] = new Chart(ctx, { type, data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5 }] }, options });
+      
+      charts[id] = new Chart(ctx, { type, data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5, barThickness: 30 }] }, options });
     }
 
     function switchTab(tabId) {
