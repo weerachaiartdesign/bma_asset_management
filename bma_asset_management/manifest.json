@@ -3,12 +3,13 @@
   "name": "BMA Assets Management",
   "short_name": "BMA Assets",
   "description": "โปรแกรมจัดการทรัพย์สิน กรุงเทพมหานคร",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#12643a",
-  "lang": "th",
+  "scope": "/",
+  "lang": "th-TH",
   "icons": [
     {
       "src": "bmaasset_icon-144.png",
