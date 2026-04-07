@@ -196,8 +196,8 @@
             <div class="text-xs text-slate-500 mb-3">${item.brand || ''} ${item.model || ''}</div>
             <div class="flex justify-between items-center pt-3 border-t border-slate-50">
               <div class="text-[10px] leading-tight">
-                <div class="text-slate-500 font-semibold">${item.dept}</div>
-                <div class="text-slate-400">${item.owner || '-'}</div>
+                <div class="text-slate-700 font-bold">${item.dept || '-'}</div>
+                <div class="text-slate-400 mt-0.5">${item.owner || '-'}</div>
               </div>
               <div class="font-mono font-bold text-emerald-700 text-sm">฿${Number(item.value).toLocaleString()}</div>
             </div>
@@ -205,17 +205,17 @@
         `).join('');
       } else {
         container.innerHTML = data.map(item => `
-          <tr class="hover:bg-emerald-50/40 transition">
+          <tr class="hover:bg-emerald-50/40 transition border-b border-slate-50">
             <td class="px-6 py-4 font-mono text-[11px] text-slate-500 font-bold">${item.id}</td>
             <td class="px-6 py-4 font-bold text-slate-700">${item.type}</td>
-            <td class="px-6 py-4 text-xs text-slate-600">
-               <div class="font-semibold">${item.brand || ''}</div>
-               <div class="text-[10px] text-slate-400">${item.model || ''}</div>
+            <td class="px-6 py-4">
+               <div class="text-xs text-slate-600 font-medium">${item.brand || ''}</div>
+               <div class="text-[10px] text-slate-400 mt-0.5">${item.model || ''}</div>
             </td>
-            <td class="px-6 py-4 text-right font-mono">฿${Number(item.value).toLocaleString()}</td>
-            <td class="px-6 py-4 text-xs">
-               <div class="font-semibold text-slate-700">${item.dept}</div>
-               <div class="text-[10px] text-slate-400 italic">${item.owner || '-'}</div>
+            <td class="px-6 py-4 text-right font-mono text-slate-600">฿${Number(item.value).toLocaleString()}</td>
+            <td class="px-6 py-4">
+               <div class="text-xs text-slate-700 font-bold">${item.dept || '-'}</div>
+               <div class="text-[10px] text-slate-400 italic mt-0.5">${item.owner || '-'}</div>
             </td>
             <td class="px-6 py-4 text-center">
               <span class="px-3 py-1 rounded-full text-[10px] font-bold ${['ปกติ','ใช้งานได้'].some(s => String(item.status).includes(s)) ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}">${item.status}</span>
@@ -264,10 +264,10 @@
     function filterTable() {
       const input = document.getElementById("searchInput").value.toLowerCase();
       const filtered = globalData.filter(item => 
-        item.id.toLowerCase().includes(input) || 
-        item.type.toLowerCase().includes(input) || 
-        item.dept.toLowerCase().includes(input) ||
-        (item.owner && item.owner.toLowerCase().includes(input))
+        (item.id && item.id.toLowerCase().includes(input)) || 
+        (item.type && item.type.toLowerCase().includes(input)) || 
+        (item.dept && item.dept.toLowerCase().includes(input)) ||
+        (item.owner && String(item.owner).toLowerCase().includes(input))
       );
       renderTable(filtered);
     }
