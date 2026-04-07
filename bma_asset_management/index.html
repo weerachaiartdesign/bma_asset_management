@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BMA Assets Management v00030</title>
+  <title>BMA Assets Management</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#12643a">
@@ -22,7 +22,7 @@
   <!-- Loading Screen -->
   <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] transition-opacity duration-500">
     <div class="spinner mb-4"></div>
-    <p id="loading-text" class="text-emerald-800 font-bold animate-pulse text-center px-4">กำลังเรียกข้อมูล BMA Assets v00030...</p>
+    <p id="loading-text" class="text-emerald-800 font-bold animate-pulse">กำลังเรียกข้อมูล BMA Assets...</p>
   </div>
 
   <!-- Sidebar (Desktop Only) -->
@@ -53,7 +53,6 @@
 
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-    <!-- Header -->
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
       <div class="md:hidden flex items-center gap-2">
         <img src="icons/bmaasset_icon-192.png" alt="Logo" class="w-6 h-6">
@@ -72,7 +71,6 @@
       <!-- Content loads here -->
     </main>
 
-    <!-- Mobile Bottom Nav -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around py-3 px-6 z-50">
       <button onclick="switchTab('dashboard')" id="m-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-800">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
@@ -103,19 +101,11 @@
     async function fetchData() {
       try {
         const response = await fetch(WEB_APP_URL);
-        if (!response.ok) throw new Error("Network response was not ok");
         globalData = await response.json();
         if (globalData.error) throw new Error(globalData.error);
         await switchTab('dashboard');
       } catch (err) {
-        console.error("Fetch failed:", err);
-        document.getElementById('loading-text').innerHTML = `
-          <div class="p-4 bg-red-50 text-red-600 rounded-lg border border-red-100">
-            <p class="font-bold">Failed to fetch data</p>
-            <p class="text-xs mt-1">${err.message}</p>
-            <button onclick="location.reload()" class="mt-3 px-4 py-1 bg-red-600 text-white rounded-full text-xs">ลองใหม่อีกครั้ง</button>
-          </div>
-        `;
+        document.getElementById('loading-text').innerHTML = `<span class="text-red-600">${err.message}</span>`;
       }
     }
 
@@ -127,19 +117,14 @@
       
       try {
         const response = await fetch(fileToLoad);
-        if(!response.ok) throw new Error(`Could not load ${fileToLoad}`);
         const html = await response.text();
         mainContent.innerHTML = html;
-
         updateNavUI(tabId);
-        
         document.getElementById('loading').style.opacity = '0';
         setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 500);
-
         renderContent();
       } catch (err) {
-        console.error("Tab Switch Error:", err);
-        mainContent.innerHTML = `<div class="p-8 text-center text-slate-400">เกิดข้อผิดพลาดในการโหลดเนื้อหา (${err.message})</div>`;
+        console.error("Load error:", err);
       }
     }
 
@@ -147,7 +132,6 @@
       document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
       const desktopBtn = document.getElementById('btn-' + tabId);
       if(desktopBtn) desktopBtn.classList.add('active');
-
       const mDash = document.getElementById('m-btn-dashboard');
       const mInv = document.getElementById('m-btn-inventory');
       if(mDash && mInv) {
@@ -174,15 +158,12 @@
       const total = globalData.length;
       const normal = globalData.filter(d => ['ปกติ','ใช้งานได้','พร้อมใช้'].some(s => String(d.status).includes(s))).length;
       const broken = globalData.filter(d => ['ชำรุด','จำหน่าย','พัง','ซ่อม'].some(s => String(d.status).includes(s))).length;
-
       ['total-val', 'normal-val', 'broken-val'].forEach((id, idx) => {
         const el = document.getElementById(id);
         if(el) el.innerText = [total, normal, broken][idx].toLocaleString();
       });
-
       const typeData = groupAndSort(globalData, 'type', isMobile ? 5 : 10);
       const deptData = groupAndSort(globalData, 'dept', isMobile ? 5 : 8);
-
       updateChart('typeChart', 'doughnut', Object.keys(typeData), Object.values(typeData), ['#064e3b', '#059669', '#10b981', '#6ee7b7', '#d1fae5']);
       updateChart('deptChart', isMobile ? 'horizontalBar' : 'bar', Object.keys(deptData), Object.values(deptData), '#059669');
     }
@@ -205,8 +186,8 @@
             <div class="text-xs text-slate-500 mb-3">${item.brand || ''} ${item.model || ''}</div>
             <div class="flex justify-between items-center pt-3 border-t border-slate-50">
               <div class="text-[10px] leading-tight">
-                <div class="text-slate-700 font-bold">${item.dept || '-'}</div>
-                <div class="text-slate-400 mt-0.5">${item.owner || '-'}</div>
+                <div class="text-slate-500 font-semibold">${item.dept}</div>
+                <div class="text-slate-400 font-normal">${item.owner || '-'}</div>
               </div>
               <div class="font-mono font-bold text-emerald-700 text-sm">฿${Number(item.value).toLocaleString()}</div>
             </div>
@@ -214,27 +195,23 @@
         `).join('');
       } else {
         container.innerHTML = data.map(item => `
-          <tr class="hover:bg-emerald-50/40 transition border-b border-slate-50">
+          <tr class="hover:bg-emerald-50/40 transition">
             <td class="px-6 py-4 font-mono text-[11px] text-slate-500 font-bold">${item.id}</td>
             <td class="px-6 py-4 font-bold text-slate-700">${item.type}</td>
-            <td class="px-6 py-4">
-               <div class="text-xs text-slate-600 font-medium">${item.brand || ''}</div>
-               <div class="text-[10px] text-slate-400 mt-0.5">${item.model || ''}</div>
+            <td class="px-6 py-4 text-xs text-slate-600">
+               <div>${item.brand || ''}</div>
+               <div class="text-[10px] text-slate-400">${item.model || ''}</div>
             </td>
-            <td class="px-6 py-4 text-right font-mono text-slate-600">฿${Number(item.value).toLocaleString()}</td>
-            <td class="px-6 py-4">
-               <div class="text-xs text-slate-700 font-bold">${item.dept || '-'}</div>
-               <div class="text-[10px] text-slate-400 italic mt-0.5">${item.owner || '-'}</div>
+            <td class="px-6 py-4 text-right font-mono">฿${Number(item.value).toLocaleString()}</td>
+            <td class="px-6 py-4 text-xs">
+               <div class="font-semibold text-slate-700">${item.dept}</div>
+               <div class="text-[10px] text-slate-400 font-normal mt-0.5">${item.owner || '-'}</div>
             </td>
             <td class="px-6 py-4 text-center">
               <span class="px-3 py-1 rounded-full text-[10px] font-bold ${['ปกติ','ใช้งานได้'].some(s => String(item.status).includes(s)) ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}">${item.status}</span>
             </td>
             <td class="px-6 py-4 text-center">
-              ${item.url ? `
-                <a href="${item.url}" target="_blank" class="inline-flex p-2 text-[#12643a] hover:bg-emerald-50 rounded-full transition">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-              ` : '<span class="text-slate-300">-</span>'}
+              ${item.url ? `<a href="${item.url}" target="_blank" class="inline-flex p-2 text-[#12643a] hover:bg-emerald-50 rounded-full transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>` : '<span class="text-slate-300">-</span>'}
             </td>
           </tr>
         `).join('');
@@ -254,10 +231,8 @@
       const canvas = document.getElementById(id);
       if(!canvas) return;
       if (charts[id]) charts[id].destroy();
-      
       const chartType = type === 'horizontalBar' ? 'bar' : type;
       const indexAxis = type === 'horizontalBar' ? 'y' : 'x';
-
       charts[id] = new Chart(canvas.getContext('2d'), {
         type: chartType,
         data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5 }] },
@@ -265,13 +240,7 @@
           indexAxis: indexAxis,
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { 
-            legend: { 
-              display: type === 'doughnut', 
-              position: 'bottom', 
-              labels: { font: { family: 'Sarabun', size: 10 } } 
-            } 
-          }
+          plugins: { legend: { display: type === 'doughnut', position: 'bottom', labels: { font: { family: 'Sarabun', size: 10 } } } }
         }
       });
     }
@@ -279,10 +248,10 @@
     function filterTable() {
       const input = document.getElementById("searchInput").value.toLowerCase();
       const filtered = globalData.filter(item => 
-        (item.id && item.id.toLowerCase().includes(input)) || 
-        (item.type && item.type.toLowerCase().includes(input)) || 
-        (item.dept && item.dept.toLowerCase().includes(input)) ||
-        (item.owner && String(item.owner).toLowerCase().includes(input))
+        item.id.toLowerCase().includes(input) || 
+        item.type.toLowerCase().includes(input) || 
+        item.dept.toLowerCase().includes(input) ||
+        (item.owner && item.owner.toLowerCase().includes(input))
       );
       renderTable(filtered);
     }
