@@ -1,28 +1,40 @@
-<!-- version 00029 - Desktop Dashboard -->
-<div id="tab-dashboard" class="tab-content space-y-8 animate-in">
-  <div class="grid grid-cols-3 gap-6">
-    <div class="stat-card border-l-4 border-[#12643a] bg-white p-6 rounded-2xl shadow-sm">
-      <p class="text-xs font-bold text-[#12643a] opacity-70 uppercase">ทรัพย์สินทั้งหมด</p>
-      <p id="total-val" class="text-3xl font-bold mt-1 text-slate-800">0</p>
-    </div>
-    <div class="stat-card border-l-4 border-teal-500 bg-white p-6 rounded-2xl shadow-sm">
-      <p class="text-xs font-bold text-teal-600 opacity-70 uppercase">ใช้งานได้ปกติ</p>
-      <p id="normal-val" class="text-3xl font-bold mt-1 text-emerald-600">0</p>
-    </div>
-    <div class="stat-card border-l-4 border-orange-500 bg-white p-6 rounded-2xl shadow-sm">
-      <p class="text-xs font-bold text-orange-600 opacity-70 uppercase">ชำรุด/รอซ่อม</p>
-      <p id="broken-val" class="text-3xl font-bold mt-1 text-orange-700">0</p>
+<!-- version 00031 -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <div class="text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider">ทรัพย์สินทั้งหมด</div>
+    <div id="total-val" class="text-3xl font-black text-slate-800">-</div>
+  </div>
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <div class="text-emerald-500 text-xs font-bold mb-1 uppercase tracking-wider">ปกติ/พร้อมใช้งาน</div>
+    <div id="normal-val" class="text-3xl font-black text-emerald-600">-</div>
+  </div>
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <div class="text-orange-500 text-xs font-bold mb-1 uppercase tracking-wider">ชำรุด/รอซ่อม</div>
+    <div id="broken-val" class="text-3xl font-black text-orange-600">-</div>
+  </div>
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <div class="text-rose-500 text-xs font-bold mb-1 uppercase tracking-wider">รอจำหน่าย</div>
+    <div id="waiting-val" class="text-3xl font-black text-rose-600">-</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+    <h3 class="font-bold text-slate-700 mb-6 flex items-center gap-2">
+      <span class="w-1 h-5 bg-emerald-500 rounded-full"></span>
+      ประเภททรัพย์สิน
+    </h3>
+    <div class="h-64">
+      <canvas id="typeChart"></canvas>
     </div>
   </div>
-
-  <div class="grid grid-cols-2 gap-6">
-    <div class="bg-white p-6 rounded-2xl shadow-sm h-[400px] flex flex-col">
-      <h3 class="font-bold text-slate-700 border-l-4 border-emerald-500 pl-3">สัดส่วนประเภททรัพย์สิน</h3>
-      <div class="flex-1 mt-4"><canvas id="typeChart"></canvas></div>
-    </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm h-[400px] flex flex-col">
-      <h3 class="font-bold text-slate-700 border-l-4 border-emerald-500 pl-3">แยกตามหน่วยงาน (สูงสุด 8 ลำดับ)</h3>
-      <div class="flex-1 mt-4"><canvas id="deptChart"></canvas></div>
+  <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+    <h3 class="font-bold text-slate-700 mb-6 flex items-center gap-2">
+      <span class="w-1 h-5 bg-emerald-500 rounded-full"></span>
+      ทรัพย์สินแยกตามหน่วยงาน
+    </h3>
+    <div class="h-64">
+      <canvas id="deptChart"></canvas>
     </div>
   </div>
 </div>
