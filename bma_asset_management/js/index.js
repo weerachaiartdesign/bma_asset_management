@@ -1,96 +1,92 @@
 /**
- * version 00032
- * ไฟล์หลัก (Main Controller) ของโปรแกรม
+ * version 00033
+ * ไฟล์ควบคุมหลัก (Main Controller)
+ * จัดการการนำทางสลับหน้าจอ (Tab Switching) การดึงข้อมูล และการเลือกฟังก์ชัน Render ให้เหมาะสมกับ Device
  */
 let globalData = [];
 let charts = {};
 let currentTab = 'dashboard';
 let isMobile = window.innerWidth < 768;
 
-window.addEventListener('load', fetchData);
-window.addEventListener('resize', () => {
+// เริ่มต้นโหลดข้อมูลเมื่อ Window พร้อม
+window.onload = fetchData;
+
+// ตรวจสอบการเปลี่ยนขนาดหน้าจอเพื่อปรับ Layout แบบ Real-time
+window.onresize = () => {
   const newIsMobile = window.innerWidth < 768;
   if(newIsMobile !== isMobile) {
     isMobile = newIsMobile;
-    switchTab(currentTab);
+    renderCurrentPage();
   }
-});
+};
 
+/**
+ * ฟังก์ชัน fetchData: ดึงข้อมูลจาก Google Apps Script และซ่อนหน้า Loading
+ */
 async function fetchData() {
+  const loadingText = document.getElementById('loading-text');
   try {
     const response = await fetch(WEB_APP_URL);
     globalData = await response.json();
     if (globalData.error) throw new Error(globalData.error);
-    await switchTab('dashboard');
+    
     const loading = document.getElementById('loading');
     if (loading) {
       loading.style.opacity = '0';
       setTimeout(() => loading.classList.add('hidden'), 500);
     }
+    renderCurrentPage();
   } catch (err) {
-    const lt = document.getElementById('loading-text');
-    if (lt) lt.innerHTML = `<span class="text-red-600">${err.message}</span>`;
+    if (loadingText) loadingText.innerHTML = `<span class="text-red-600">เกิดข้อผิดพลาด: ${err.message}</span>`;
   }
 }
 
-async function switchTab(tabId) {
+/**
+ * ฟังก์ชัน switchTab: รับค่า ID ของ Tab ที่ต้องการเปลี่ยนและทำการ Render ใหม่
+ */
+function switchTab(tabId) {
   currentTab = tabId;
-  const mainContent = document.getElementById('main-content');
-  const prefix = isMobile ? 'm_' : 'd_';
-  const pageName = tabId === 'dashboard' ? 'dashboard' : 'assets-list';
-  const htmlFile = `${prefix}${pageName}.html`;
-  const jsFile = `${prefix}${pageName}.js`;
-
-  try {
-    // โหลด HTML
-    const htmlRes = await fetch(htmlFile);
-    mainContent.innerHTML = await htmlRes.text();
-
-    // โหลด JS ประจำหน้า (Dynamic Script Loading)
-    await loadPageScript(jsFile);
-
-    updateNavUI(tabId);
-    renderContent();
-  } catch (err) {
-    console.error("Navigation error:", err);
-  }
+  updateNavUI(tabId);
+  renderCurrentPage();
 }
 
-function loadPageScript(src) {
-  return new Promise((resolve) => {
-    const oldScript = document.querySelector(`script[data-page-script]`);
-    if (oldScript) oldScript.remove();
-
-    const script = document.createElement('script');
-    script.src = src;
-    script.dataset.pageScript = "true";
-    script.onload = resolve;
-    document.body.appendChild(script);
-  });
-}
-
+/**
+ * ฟังก์ชัน updateNavUI: เปลี่ยนสถานะปุ่มกดในเมนู (Active/Inactive)
+ */
 function updateNavUI(tabId) {
   document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-  const desktopBtn = document.getElementById('btn-' + tabId);
-  if(desktopBtn) desktopBtn.classList.add('active');
+  const btn = document.getElementById('btn-' + tabId);
+  if(btn) btn.classList.add('active');
 
   const mDash = document.getElementById('m-btn-dashboard');
   const mInv = document.getElementById('m-btn-inventory');
   if(mDash && mInv) {
-    const activeClass = 'text-emerald-800';
-    const inactiveClass = 'text-slate-400';
     if(tabId === 'dashboard') {
-      mDash.classList.replace(inactiveClass, activeClass);
-      mInv.classList.replace(activeClass, inactiveClass);
+      mDash.style.color = '#065f46';
+      mInv.style.color = '#94a3b8';
     } else {
-      mInv.classList.replace(inactiveClass, activeClass);
-      mDash.classList.replace(activeClass, inactiveClass);
+      mInv.style.color = '#065f46';
+      mDash.style.color = '#94a3b8';
     }
   }
   document.getElementById('page-title').innerText = tabId === 'dashboard' ? 'Dashboard' : 'รายการทรัพย์สิน';
 }
 
-function renderContent() {
+/**
+ * ฟังก์ชัน renderCurrentPage: เลือกฟังก์ชันการวาดหน้าจอจากไฟล์ Logic เฉพาะส่วน (Desktop/Mobile)
+ */
+async function renderCurrentPage() {
+  const mainContent = document.getElementById('main-content');
+  if (!mainContent) return;
+
+  const prefix = isMobile ? 'm_' : 'd_';
+  const pageName = currentTab === 'dashboard' ? 'dashboard' : 'assets-list';
+  
+  // โหลด Template HTML
+  const res = await fetch(`${prefix}${pageName}.html`);
+  mainContent.innerHTML = await res.text();
+
+  // เรียกใช้ฟังก์ชัน Render ที่อยู่ในไฟล์ JS แยกส่วน
   if (currentTab === 'dashboard') {
     isMobile ? renderMobileDashboard(globalData) : renderDesktopDashboard(globalData);
   } else {
@@ -98,19 +94,22 @@ function renderContent() {
   }
 }
 
+/**
+ * ฟังก์ชัน filterTable: ใช้สำหรับกรองข้อมูลในหน้ารายการทรัพย์สิน
+ */
 function filterTable() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
+  const query = document.getElementById('searchInput')?.value.toLowerCase() || "";
   const filtered = globalData.filter(item => 
-    String(item.id).toLowerCase().includes(input) || 
-    String(item.type).toLowerCase().includes(input) || 
-    String(item.dept).toLowerCase().includes(input) ||
-    String(item.location).toLowerCase().includes(input) ||
-    (item.owner && String(item.owner).toLowerCase().includes(input))
+    item.type.toLowerCase().includes(query) || 
+    item.id.toLowerCase().includes(query) ||
+    item.dept.toLowerCase().includes(query)
   );
   isMobile ? renderMobileTable(filtered) : renderDesktopTable(filtered);
 }
 
-// Helper Functions
+/**
+ * Helper: รวมกลุ่มข้อมูลและเรียงลำดับ (ใช้สำหรับวาดกราฟ)
+ */
 function groupAndSortData(data, key, limit) {
   const counts = data.reduce((acc, curr) => {
     const val = curr[key] || 'ไม่ระบุ';
@@ -118,27 +117,4 @@ function groupAndSortData(data, key, limit) {
     return acc;
   }, {});
   return Object.fromEntries(Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, limit));
-}
-
-function updateChartInstance(id, type, labels, data, colors) {
-  const canvas = document.getElementById(id);
-  if(!canvas) return;
-  if (charts[id]) charts[id].destroy();
-  
-  charts[id] = new Chart(canvas.getContext('2d'), {
-    type: type === 'horizontalBar' ? 'bar' : type,
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5 }] },
-    options: {
-      indexAxis: type === 'horizontalBar' ? 'y' : 'x',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { 
-        legend: { 
-          display: type === 'doughnut', 
-          position: 'left',
-          labels: { font: { family: 'Sarabun', size: 10 }, boxWidth: 10 } 
-        } 
-      }
-    }
-  });
 }
