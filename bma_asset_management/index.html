@@ -1,90 +1,67 @@
-<!-- version 00032 -->
+<!-- version 00033 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BMA Assets Management</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#12643a">
-  
-  <link rel="apple-touch-icon" href="icons/bmaasset_apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="icons/bmaasset_apple-touch-icon-ipad.png">
-
+  <title>BMA Assets Management v.00033</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="main.css">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; }
+    .nav-link.active { background: rgba(255,255,255,0.15); font-weight: bold; border-left: 4px solid #10b981; }
+    .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #059669; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
 </head>
 <body class="bg-slate-50 flex h-screen overflow-hidden">
 
-  <!-- Loading Screen -->
+  <!-- หน้าจอโหลดข้อมูล -->
   <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] transition-opacity duration-500">
     <div class="spinner mb-4"></div>
-    <p id="loading-text" class="text-emerald-800 font-bold animate-pulse">กำลังเรียกข้อมูล BMA Assets...</p>
+    <p id="loading-text" class="text-emerald-800 font-bold">กำลังเชื่อมต่อข้อมูล BMA Assets...</p>
   </div>
 
-  <!-- Sidebar (Desktop Only) -->
-  <aside class="w-64 bkk-sidebar text-white flex-shrink-0 hidden md:flex flex-col">
+  <!-- แถบเมนูข้าง (เฉพาะ Desktop) -->
+  <aside class="w-64 bg-[#12643a] text-white flex-shrink-0 hidden md:flex flex-col">
     <div class="p-6 flex items-center gap-3 border-b border-emerald-700/50">
-      <div class="bg-white p-1 rounded-lg shadow-sm">
-        <img src="icons/bmaasset_icon-192.png" alt="BMA Logo" class="w-8 h-8">
-      </div>
-      <h1 class="font-bold text-sm tracking-tight leading-tight">BMA Assets<br>Management</h1>
+      <h1 class="font-bold text-lg">BMA Assets</h1>
     </div>
-    
     <nav class="flex-1 p-4 space-y-2 mt-4">
-      <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-        Dashboard
-      </button>
-      <button onclick="switchTab('inventory')" id="btn-inventory" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-        รายการทรัพย์สิน
-      </button>
+      <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-left">Dashboard</button>
+      <button onclick="switchTab('inventory')" id="btn-inventory" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-left">รายการทรัพย์สิน</button>
     </nav>
-
-    <div class="p-6 border-t border-emerald-700/50 text-[10px] opacity-60">
-      <p>Version 00032</p>
-      <p id="last-update-sidebar">อัปเดต: -</p>
-    </div>
   </aside>
 
-  <!-- Main Content Area -->
+  <!-- ส่วนแสดงผลหลัก -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-    <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
-      <div class="md:hidden flex items-center gap-2">
-        <img src="icons/bmaasset_icon-192.png" alt="Logo" class="w-6 h-6">
-        <span class="font-bold text-[#12643a]">BMA Assets</span>
-      </div>
-      <h2 id="page-title" class="hidden md:block font-bold text-slate-700">Dashboard</h2>
-      <div class="flex items-center gap-4 text-xs">
-        <span id="connection-status" class="flex items-center gap-1.5 font-medium text-[#12643a] bg-emerald-50 px-3 py-1 rounded-full">
-          <span class="w-2 h-2 bg-[#12643a] rounded-full animate-pulse"></span>
-          Live
-        </span>
-      </div>
+    <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+      <h2 id="page-title" class="font-bold text-slate-700">Dashboard</h2>
+      <div id="status-indicator" class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full">CONNECTED</div>
     </header>
 
-    <main id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
-      <!-- Content loads here -->
+    <main id="main-content" class="flex-1 overflow-y-auto">
+      <!-- เนื้อหาจะถูกฉีดเข้ามาผ่านฟังก์ชันใน index.js -->
     </main>
 
-    <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around py-3 px-6 z-50">
-      <button onclick="switchTab('dashboard')" id="m-btn-dashboard" class="flex flex-col items-center gap-1 text-emerald-800">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+    <!-- เมนูล่าง (เฉพาะ Mobile) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around py-3 z-50">
+      <button onclick="switchTab('dashboard')" id="m-btn-dashboard" class="flex flex-col items-center text-emerald-800">
         <span class="text-[10px] font-bold">Dashboard</span>
       </button>
-      <button onclick="switchTab('inventory')" id="m-btn-inventory" class="flex flex-col items-center gap-1 text-slate-400">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        <span class="text-[10px]">รายการ</span>
+      <button onclick="switchTab('inventory')" id="m-btn-inventory" class="flex flex-col items-center text-slate-400">
+        <span class="text-[10px] font-bold">รายการ</span>
       </button>
     </nav>
   </div>
 
-  <script src="js/api-config.js"></script>
+  <script src="api-config.js"></script>
+  <!-- โหลดไฟล์ Logic ประจำหน้าทิ้งไว้เพื่อให้ฟังก์ชันพร้อมใช้งาน -->
+  <script src="d_dashboard.js"></script>
+  <script src="d_assets-list.js"></script>
+  <script src="m_dashboard.js"></script>
+  <script src="m_assets-list.js"></script>
   <script src="index.js"></script>
 </body>
 </html>
