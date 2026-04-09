@@ -1,31 +1,26 @@
-<!-- version 00032 -->
-<div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-  <div class="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <h3 class="font-bold text-slate-700">ตารางทรัพย์สินทั้งหมด</h3>
-    <div class="relative">
-      <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาเลขครุภัณฑ์, ประเภท, หน่วยงาน..." 
-             class="w-full md:w-80 pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 transition">
-      <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-      </svg>
+<!-- version 00033 -->
+<div class="p-8">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+      <h3 class="font-bold text-slate-700">บัญชีรายการทรัพย์สิน</h3>
+      <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาเลขครุภัณฑ์, รายการ..." class="px-4 py-2 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-emerald-500">
     </div>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-slate-50/50 text-slate-400 text-[11px] uppercase tracking-widest font-bold">
-          <th class="px-6 py-4">เลขครุภัณฑ์</th>
-          <th class="px-6 py-4">ประเภท/รายการ</th>
-          <th class="px-6 py-4">ยี่ห้อ/รุ่น/S/N</th>
-          <th class="px-6 py-4 text-right">มูลค่าต้นทุน</th>
-          <th class="px-6 py-4">หน่วยงาน/สถานที่ตั้ง/ผู้รับผิดชอบ</th>
-          <th class="px-6 py-4 text-center">สถานะ</th>
-          <th class="px-6 py-4 text-center">จัดการ</th>
-        </tr>
-      </thead>
-      <tbody id="table-body" class="text-sm divide-y divide-slate-50">
-        <!-- Rendered by js/index.js -->
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-slate-50 text-[10px] uppercase text-slate-500 font-bold">
+          <tr>
+            <th class="px-6 py-4">เลขครุภัณฑ์</th>
+            <th class="px-6 py-4">รายการ</th>
+            <th class="px-6 py-4">ยี่ห้อ/รุ่น/SN</th>
+            <th class="px-6 py-4">หน่วยงาน/ที่ตั้ง/ผู้รับผิดชอบ</th>
+            <th class="px-6 py-4 text-center">สถานะ</th>
+            <th class="px-6 py-4 text-center">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="table-body" class="divide-y divide-slate-100">
+          <!-- ข้อมูลจะถูกฉีดเข้ามาที่นี่ -->
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
