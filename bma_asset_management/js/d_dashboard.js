@@ -20,7 +20,7 @@ function renderDesktopDashboard(data) {
 
   // เตรียมข้อมูลกราฟ
   const typeMap = groupAndSortData(data, 'type', 10);
-  const deptMap = groupAndSortData(data, 'dept', 8);
+  const deptMap = groupAndSortData(data, 'dept', 10);
 
   // วาดกราฟประเภท (Doughnut) และ กราฟหน่วยงาน (Bar)
   updateChart('typeChart', 'doughnut', Object.keys(typeMap), Object.values(typeMap));
