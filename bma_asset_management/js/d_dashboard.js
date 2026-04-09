@@ -1,6 +1,7 @@
 /**
  * version 00033
  * ฟังก์ชันสำหรับประมวลผลข้อมูลและอัปเดต Dashboard บน Desktop
+ * ปรับปรุง: แสดงชื่อรายการ (Legend) ไว้ที่ด้านข้างของกราฟวงกลม
  */
 function renderDesktopDashboard(data) {
   // คำนวณค่าทางสถิติ
@@ -21,12 +22,14 @@ function renderDesktopDashboard(data) {
   const typeMap = groupAndSortData(data, 'type', 10);
   const deptMap = groupAndSortData(data, 'dept', 8);
 
+  // วาดกราฟประเภท (Doughnut) และ กราฟหน่วยงาน (Bar)
   updateChart('typeChart', 'doughnut', Object.keys(typeMap), Object.values(typeMap));
   updateChart('deptChart', 'bar', Object.keys(deptMap), Object.values(deptMap));
 }
 
 /**
  * ฟังก์ชัน updateChart: จัดการการวาดหรือทำลายกราฟเก่าก่อนสร้างใหม่ (Chart.js)
+ * ปรับปรุง: ตั้งค่า position ของ legend ให้เป็น 'right' สำหรับกราฟวงกลม
  */
 function updateChart(id, type, labels, values) {
   const canvas = document.getElementById(id);
@@ -42,6 +45,19 @@ function updateChart(id, type, labels, values) {
         backgroundColor: ['#064e3b', '#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5', '#ecfdf5', '#f0fdf4', '#f8fafc']
       }]
     },
-    options: { responsive: true, maintainAspectRatio: false }
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: type === 'doughnut' ? 'right' : 'top', // แสดงด้านข้างเฉพาะกราฟวงกลม
+          labels: {
+            font: { family: 'Sarabun', size: 11 },
+            boxWidth: 12
+          }
+        }
+      }
+    }
   });
 }
