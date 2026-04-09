@@ -1,4 +1,4 @@
-<!-- version 00031 -->
+<!-- version 00032 -->
 <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
   <div class="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
     <h3 class="font-bold text-slate-700">ตารางทรัพย์สินทั้งหมด</h3>
@@ -6,7 +6,7 @@
       <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาเลขครุภัณฑ์, ประเภท, หน่วยงาน..." 
              class="w-full md:w-80 pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 transition">
       <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
     </div>
   </div>
@@ -24,7 +24,7 @@
         </tr>
       </thead>
       <tbody id="table-body" class="text-sm divide-y divide-slate-50">
-        <!-- JS render -->
+        <!-- Rendered by js/index.js -->
       </tbody>
     </table>
   </div>
