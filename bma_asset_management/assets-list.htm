@@ -1,0 +1,38 @@
+<!-- version 00033 (Unified Assets List) -->
+
+<!-- Desktop View (แสดงเฉพาะจอขนาด md ขึ้นไป) -->
+<div class="hidden md:block p-8">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+      <h3 class="font-bold text-slate-700">บัญชีรายการทรัพย์สิน</h3>
+      <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาเลขครุภัณฑ์, รายการ..." class="px-4 py-2 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-slate-50 text-[10px] uppercase text-slate-500 font-bold">
+          <tr>
+            <th class="px-6 py-4">เลขครุภัณฑ์</th>
+            <th class="px-6 py-4">รายการ</th>
+            <th class="px-6 py-4">ยี่ห้อ/รุ่น/SN</th>
+            <th class="px-6 py-4">หน่วยงาน/ที่ตั้ง/ผู้รับผิดชอบ</th>
+            <th class="px-6 py-4 text-center">สถานะ</th>
+            <th class="px-6 py-4 text-center">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="table-body" class="divide-y divide-slate-100">
+          <!-- ข้อมูลตาราง Desktop จะถูกฉีดเข้ามาที่นี่ -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile View (แสดงเฉพาะจอขนาดเล็กกว่า md) -->
+<div class="block md:hidden p-4 pb-20">
+  <div class="mb-4">
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาทรัพย์สิน..." class="w-full px-4 py-3 rounded-xl border border-slate-200 shadow-sm text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+  </div>
+  <div id="mobile-list" class="space-y-4">
+    <!-- Card รายการ Mobile จะแสดงผลที่นี่ -->
+  </div>
+</div>
