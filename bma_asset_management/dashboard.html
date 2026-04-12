@@ -1,11 +1,18 @@
-<!-- version 00033 (Unified Dashboard) -->
+<!-- version 00034 -->
+<!-- 
+  ไฟล์: dashboard.html
+  หน้าที่: เป็น Template แสดงผลส่วนหน้า Dashboard ทั้ง Desktop และ Mobile
+  โครงสร้าง: 
+    - ส่วน Desktop (md:block): แสดงการ์ดสถิติ 4 ช่อง และกราฟ 2 กราฟวางคู่กัน
+    - ส่วน Mobile (md:hidden): แสดงการ์ดสถิติแบบ 2x2 และกราฟวางซ้อนกันแนวตั้ง
+-->
 
-<!-- Desktop Dashboard (แสดงเฉพาะจอขนาด md ขึ้นไป) -->
-<div class="hidden md:block p-8 space-y-8">
-  <!-- สถิติภาพรวม Desktop -->
+<!-- ส่วนการแสดงผลสำหรับ Desktop -->
+<div class="hidden md:block p-8 space-y-8 animate-in">
+  <!-- แถวสถิติสรุป (4 คอลัมน์) -->
   <div class="grid grid-cols-4 gap-6">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <p class="text-xs text-slate-500 font-bold mb-1 uppercase">ทั้งหมด</p>
+      <p class="text-xs text-slate-500 font-bold mb-1 uppercase">ทรัพย์สินทั้งหมด</p>
       <p id="total-val" class="text-3xl font-bold text-slate-800">0</p>
     </div>
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -22,35 +29,31 @@
     </div>
   </div>
 
-  <!-- ส่วนของกราฟ Desktop -->
+  <!-- ส่วนแสดงกราฟ (2 คอลัมน์) -->
   <div class="grid grid-cols-2 gap-8">
-    <div class="bg-white p-6 rounded-2xl shadow-sm h-90 flex flex-col">
-      <p class="font-bold text-slate-700 mb-4 text-sm">แยกตามประเภท</p>
-      <div class="flex-1 min-h-[300px]"><canvas id="typeChart"></canvas></div>
+    <div class="bg-white p-6 rounded-2xl shadow-sm h-96 flex flex-col glass-card">
+      <p class="chart-title mb-4">แยกตามประเภท</p>
+      <div class="flex-1 min-h-0"><canvas id="typeChart"></canvas></div>
     </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm h-90 flex flex-col">
-      <p class="font-bold text-slate-700 mb-4 text-sm">แยกตามหน่วยงาน</p>
-      <div class="flex-1 min-h-[300px]"><canvas id="deptChart"></canvas></div>
+    <div class="bg-white p-6 rounded-2xl shadow-sm h-96 flex flex-col glass-card">
+      <p class="chart-title mb-4">แยกตามหน่วยงาน</p>
+      <div class="flex-1 min-h-0"><canvas id="deptChart"></canvas></div>
     </div>
   </div>
 </div>
 
-<!-- Mobile Dashboard (แสดงเฉพาะจอขนาดเล็กกว่า md) -->
-<div class="block md:hidden p-4 space-y-4 pb-24">
-  <!-- แถวบน Mobile: สถิติรวมและปกติ -->
+<!-- ส่วนการแสดงผลสำหรับ Mobile -->
+<div class="block md:hidden p-4 space-y-4 pb-24 animate-in">
+  <!-- แถวสถิติสรุปแบบ Grid 2x2 -->
   <div class="grid grid-cols-2 gap-3">
     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-      <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">ทรัพย์สินทั้งหมด</p>
+      <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">ทั้งหมด</p>
       <p id="m-total" class="text-2xl font-bold text-slate-800 leading-none">0</p>
     </div>
     <div class="bg-white p-4 rounded-2xl shadow-sm border border-emerald-50">
-      <p class="text-[10px] font-bold text-emerald-500 uppercase mb-1">ปกติ/ใช้งานได้</p>
+      <p class="text-[10px] font-bold text-emerald-500 uppercase mb-1">ใช้งานได้</p>
       <p id="m-normal" class="text-2xl font-bold text-emerald-600 leading-none">0</p>
     </div>
-  </div>
-
-  <!-- แถวสอง Mobile: ชำรุดและรอจำหน่าย -->
-  <div class="grid grid-cols-2 gap-3">
     <div class="bg-white p-4 rounded-2xl shadow-sm border border-orange-50">
       <p class="text-[10px] font-bold text-orange-500 uppercase mb-1">ชำรุด/รอซ่อม</p>
       <p id="m-broken" class="text-2xl font-bold text-orange-600 leading-none">0</p>
@@ -61,19 +64,14 @@
     </div>
   </div>
   
-  <!-- กราฟที่ 1 Mobile: แยกตามประเภท -->
-  <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+  <!-- กราฟ Mobile -->
+  <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col glass-card">
     <p class="font-bold text-slate-700 mb-2 text-xs">แยกตามประเภททรัพย์สิน</p>
-    <div class="h-64 relative">
-      <canvas id="mTypeChart"></canvas>
-    </div>
+    <div class="h-64 relative"><canvas id="mTypeChart"></canvas></div>
   </div>
 
-  <!-- กราฟที่ 2 Mobile: แยกตามหน่วยงาน -->
-  <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+  <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col glass-card">
     <p class="font-bold text-slate-700 mb-2 text-xs">แยกตามหน่วยงาน</p>
-    <div class="h-64 relative">
-      <canvas id="mDeptChart"></canvas>
-    </div>
+    <div class="h-64 relative"><canvas id="mDeptChart"></canvas></div>
   </div>
 </div>
