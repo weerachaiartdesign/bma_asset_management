@@ -1,4 +1,4 @@
-<!-- version 00036 -->
+<!-- version 00037 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -12,21 +12,21 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col md:flex-row font-['Sarabun']">
 
-    <!-- Loading -->
+    <!-- Loading Screen -->
     <div id="loading" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="spinner mb-4"></div>
         <p id="loading-text" class="text-slate-500 font-bold animate-pulse">กำลังเตรียมข้อมูล...</p>
     </div>
 
-    <!-- Sidebar (Desktop) -->
+    <!-- Sidebar (Desktop) - ปรับโทนสีตามรูปภาพ -->
     <nav id="sidebar" class="hidden md:flex bkk-sidebar p-4 shadow-2xl h-screen sticky top-0">
-        <div class="flex items-center justify-between mb-10 px-2">
+        <div class="flex items-center justify-between mb-10 px-2 mt-4">
             <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-8 h-8 bg-white rounded-lg flex-shrink-0 flex items-center justify-center text-emerald-800 font-black">B</div>
-                <h1 class="text-lg font-bold sidebar-title-text text-white">BMA ASSETS</h1>
+                <div class="w-8 h-8 bg-white rounded-lg flex-shrink-0 flex items-center justify-center text-emerald-900 font-black">B</div>
+                <h1 class="text-lg font-bold sidebar-title-text text-white tracking-tight">BMA ASSETS</h1>
             </div>
-            <!-- 3. ปุ่มแฮมเบอร์เกอร์พับเมนู -->
-            <button onclick="toggleSidebar()" class="p-2 hover:bg-white/20 rounded-lg text-white transition-colors">
+            <!-- ปุ่มพับเมนู -->
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-white/10 rounded-lg text-white transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </div>
@@ -34,33 +34,41 @@
         <div class="flex-1 space-y-1">
             <button id="btn-dashboard" onclick="switchTab('dashboard')" class="nav-link active w-full">
                 <svg class="w-6 h-6 flex-shrink-0 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="sidebar-text">ภาพรวมระบบ</span>
+                <span class="sidebar-text text-sm">Dashboard</span>
             </button>
             <button id="btn-inventory" onclick="switchTab('inventory')" class="nav-link w-full">
                 <svg class="w-6 h-6 flex-shrink-0 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                <span class="sidebar-text">รายการทรัพย์สิน</span>
+                <span class="sidebar-text text-sm">รายการทรัพย์สิน</span>
             </button>
+        </div>
+        
+        <div class="p-2 mt-auto border-t border-white/5 sidebar-title-text">
+            <p class="text-[10px] text-white/40">Version 00037</p>
         </div>
     </nav>
 
     <!-- Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="bg-white border-b border-slate-200 p-4 md:p-6 flex-shrink-0 flex justify-between items-center">
-            <h2 id="page-title" class="text-xl font-bold text-slate-800">หน้าหลัก</h2>
+            <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard</h2>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-bold text-slate-400">Live</span>
+            </div>
         </header>
         
-        <!-- 2. ส่วนแสดงผลที่เลื่อนได้จริง -->
+        <!-- เนื้อหาหลัก -->
         <div id="main-content"></div>
 
-        <!-- Mobile Nav -->
-        <div class="md:hidden flex mobile-nav justify-around p-3 pb-6 border-t border-white/10">
+        <!-- Mobile Navigation -->
+        <div class="md:hidden flex mobile-nav justify-around p-3 pb-6 border-t border-white/5 shadow-lg">
             <button id="m-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 active">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
-                <span class="text-[10px] font-bold">สรุปผล</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Dashboard</span>
             </button>
             <button id="m-btn-inventory" onclick="switchTab('inventory')" class="flex flex-col items-center gap-1">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg>
-                <span class="text-[10px] font-bold">รายการ</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Inventory</span>
             </button>
         </div>
     </main>
