@@ -8,7 +8,7 @@ body {
 /* 1. ปรับสีแถบเมนูตามรูปภาพ (เขียวเข้ม กทม. ต้นฉบับ) */
 .bkk-sidebar {
     background-color: linear-gradient(180deg, #0a3d24 0%, #12643a 100%);/* #044226 !important; /* ปรับเป็นสีเขียวเข้มตามรูปภาพที่ส่งมา */
-    color: white;
+    color: #a7f3d0; /*white;*/
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 260px;
     flex-shrink: 0;
