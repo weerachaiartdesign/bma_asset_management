@@ -5,10 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BMA Assets Management</title>
+
+    <!-- PWA & SEO -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#12643a">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Inline Tailwind Config for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { bma: '#12643a', bmaLight: '#059669' }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col md:flex-row font-['Sarabun']">
 
