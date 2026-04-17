@@ -1,19 +1,24 @@
-/* version 00037 */
+/* version 00038 */
 body {
     font-family: 'Sarabun', sans-serif;
     color: #334155;
     background-color: #f8fafc;
+    margin: 0;
 }
 
-/* 1. ปรับสีแถบเมนูตามรูปภาพ (เขียวเข้ม กทม. ต้นฉบับ) */
+/* 1. แก้ไข Sidebar ให้เหมือนรูป 01 */
 .bkk-sidebar {
-    background-color: linear-gradient(180deg, #0a3d24 0%, #12643a 100%);/* #044226 !important; /* ปรับเป็นสีเขียวเข้มตามรูปภาพที่ส่งมา */
-    color: #a7f3d0; /*white;*/
+    background-color: #044226 !important; /* เขียวเข้มตามรูป 01 */
+    color: white;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 200px;
+    width: 240px; /* ปรับความกว้างให้พอดีตามรูป 01 */
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 40;
 }
 
 /* สถานะเมื่อพับ Sidebar */
@@ -22,42 +27,61 @@ body {
 }
 
 .bkk-sidebar.collapsed .sidebar-text,
-.bkk-sidebar.collapsed .sidebar-title-text {
+.bkk-sidebar.collapsed .sidebar-title-text,
+.bkk-sidebar.collapsed .sidebar-version {
     display: none;
 }
 
-/* ปรับสีตัวอักษรและพื้นหลังเมนูที่เลือกให้เด่นชัดขึ้น */
+/* ปรับแต่งปุ่มเมนูให้เหมือนรูป 01 */
 .nav-link {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.7);
     display: flex;
     align-items: center;
-    padding: 0.85rem 1rem;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0.75rem;
     border-radius: 0.75rem;
-    margin-bottom: 0.5rem;
     transition: all 0.2s;
     white-space: nowrap;
+    text-decoration: none;
+    font-size: 0.9rem;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     color: white;
 }
 
-/* สีเมนูที่กำลังใช้งาน (เขียวสว่างตัดกับพื้นเข้มตามรูป) */
+/* สีเมนูที่เลือก (Active) ตามรูป 01 */
 .nav-link.active {
-    background: #0ea85d; /* สีเขียวสว่างสำหรับเน้นปุ่มที่เลือก */
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: #0ea85d !important; 
+    color: white !important;
+    font-weight: bold;
 }
 
-/* 2. ส่วนแสดงผลหลักที่เลื่อนได้ */
+.nav-link svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+}
+
+.bkk-sidebar.collapsed .nav-link {
+    justify-content: center;
+    margin: 0.25rem 0.5rem;
+}
+
+.bkk-sidebar.collapsed .nav-link svg {
+    margin-right: 0;
+}
+
+/* 2. แก้ไขการเลื่อนหน้าจอ */
 #main-content {
     flex: 1;
     overflow-y: auto !important;
+    height: calc(100vh - 70px); /* ลบความสูง Header ออก */
     -webkit-overflow-scrolling: touch;
 }
 
-/* 3. ปรับสีเมนู Mobile ให้เข้าชุดกัน */
+/* 3. สไตล์ Mobile Nav */
 .mobile-nav {
     background-color: #044226;
     color: white;
@@ -66,32 +90,32 @@ body {
     left: 0;
     right: 0;
     z-index: 50;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.75rem 0 1.5rem 0;
 }
 
 .mobile-nav button {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.5);
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
 }
 
 .mobile-nav button.active {
     color: #0ea85d;
 }
 
-/* สไตล์ตารางและการแสดงผล */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
+/* อื่นๆ */
 .spinner {
-    border: 4px solid #f1f5f9;
-    border-top: 4px solid #044226;
+    border: 3px solid #f1f5f9;
+    border-top: 3px solid #0ea85d;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.animate-in { animation: fadeIn 0.3s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
