@@ -1,7 +1,8 @@
 /**
- * version 00046 (Based on 00041)
- * แก้ไข: 1. เพิ่ม toggleSidebar() สำหรับปุ่ม Hamburger
- * 2. เพิ่ม setTimeout ใน renderCurrentPage() เพื่อแก้ปัญหากราฟไม่แสดง
+ * version 00047
+ * แก้ไข: 
+ * 1. ฟังก์ชัน toggleSidebar() สำหรับพับเมนูและบังคับให้กราฟ Resize
+ * 2. ใช้ setTimeout ใน renderCurrentPage() เพื่อรอให้ Canvas พร้อมก่อนวาดกราฟ
  */
 let globalData = [];
 let charts = {};
@@ -11,21 +12,28 @@ let rowsPerPage = 25;
 
 window.onload = fetchData;
 
+// จัดการเรื่องการเปลี่ยนขนาดหน้าจอ
 window.onresize = () => {
     const newIsMobile = window.innerWidth < 768;
     if(newIsMobile !== isMobile) {
         isMobile = newIsMobile;
         renderCurrentPage();
     }
+    // สั่ง Resize กราฟทุกตัวเมื่อมีการขยับหน้าจอ
+    Object.values(charts).forEach(chart => {
+        if (chart && typeof chart.resize === 'function') chart.resize();
+    });
 };
 
-// --- จุดที่ 1: ฟังก์ชันสำหรับพับเมนู Hamburger ---
+/**
+ * toggleSidebar: สำหรับพับ/กางเมนู Sidebar ฝั่ง Desktop
+ */
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('collapsed');
         
-        // ให้กราฟปรับขนาดตามพื้นที่ที่เปลี่ยนไป (หน่วงเวลาให้ CSS ย่อเมนูเสร็จก่อน)
+        // รอให้ CSS Transition (0.3s) ทำงานเสร็จก่อน แล้วค่อยสั่ง Resize กราฟ
         setTimeout(() => {
             Object.values(charts).forEach(chart => {
                 if (chart && typeof chart.resize === 'function') {
@@ -35,7 +43,6 @@ function toggleSidebar() {
         }, 350);
     }
 }
-// ------------------------------------------
 
 async function fetchData() {
     const loadingText = document.getElementById('loading-text');
@@ -66,12 +73,12 @@ function switchTab(tabId) {
 }
 
 function updateNavUI(tabId) {
-    // Desktop
+    // Desktop Nav
     document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
     const btn = document.getElementById('btn-' + tabId);
     if(btn) btn.classList.add('active');
 
-    // Mobile
+    // Mobile Nav
     const mDash = document.getElementById('m-btn-dashboard');
     const mInv = document.getElementById('m-btn-inventory');
     if(mDash && mInv) {
@@ -99,20 +106,21 @@ async function renderCurrentPage() {
         mainContent.innerHTML = await res.text();
         mainContent.scrollTop = 0;
 
-        // --- จุดที่ 2: ใช้ setTimeout รอให้เบราว์เซอร์สร้าง HTML (Canvas) ให้เสร็จก่อนวาดกราฟ ---
+        // แก้ปัญหากราฟไม่ขึ้น: หน่วงเวลาเล็กน้อยเพื่อให้ Canvas ถูกวาดลง DOM เสร็จก่อน
         setTimeout(() => {
             if (currentTab === 'dashboard') {
-                if (typeof renderDesktopDashboard === 'function' && typeof renderMobileDashboard === 'function') {
-                    isMobile ? renderMobileDashboard(globalData) : renderDesktopDashboard(globalData);
+                if (isMobile) {
+                    if (typeof renderMobileDashboard === 'function') renderMobileDashboard(globalData);
+                } else {
+                    if (typeof renderDesktopDashboard === 'function') renderDesktopDashboard(globalData);
                 }
             } else {
                 filterTable(); 
             }
-        }, 150);
-        // ---------------------------------------------------------------------------------
+        }, 200);
 
     } catch (err) {
-        mainContent.innerHTML = `<div class="p-8 text-red-500">Error: ${err.message}</div>`;
+        mainContent.innerHTML = `<div class="p-8 text-red-500 text-center">ขออภัย เกิดข้อผิดพลาด: ${err.message}</div>`;
     }
 }
 
