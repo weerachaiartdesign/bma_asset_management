@@ -1,5 +1,5 @@
 /**
- * version 00051
+ * version 00052
  * ไฟล์: index.js
  * หน้าที่: จัดการการแสดงผลข้อมูลทรัพย์สินในรูปแบบตาราง (Desktop) และการ์ด (Mobile)
  * รองรับ: Pagination (25/50/100/ทั้งหมด), การค้นหาแบบ Real-time, Responsive Desktop/Mobile
@@ -30,14 +30,12 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
     
-    // Toggle class collapsed
-    sidebar.classList.toggle('collapsed');
+    // Toggle class hidden-sidebar (ซ่อน/แสดง)
+    sidebar.classList.toggle('hidden-sidebar');
     
-    // เก็บสถานะการพับลง localStorage
-    const isCollapsed = sidebar.classList.contains('collapsed');
-    localStorage.setItem('sidebarCollapsed', isCollapsed);
-    
-    // 🔽 ไม่ต้องเปลี่ยนไอคอน ใช้ไอคอนเดิม (≡) เสมอ
+    // เก็บสถานะการซ่อนลง localStorage
+    const isHidden = sidebar.classList.contains('hidden-sidebar');
+    localStorage.setItem('sidebarHidden', isHidden);
     
     // ปรับขนาดกราฟหลังจาก sidebar เปลี่ยนขนาด
     setTimeout(() => {
@@ -50,19 +48,18 @@ function toggleSidebar() {
     }, 350);
 }
 
-// โหลดสถานะ sidebar ที่เคยพับไว้
+// โหลดสถานะ sidebar ที่เคยซ่อนไว้
 function loadSidebarState() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
     
-    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-    if (isCollapsed) {
-        sidebar.classList.add('collapsed');
+    const isHidden = localStorage.getItem('sidebarHidden') === 'true';
+    if (isHidden) {
+        sidebar.classList.add('hidden-sidebar');
     }
-    // 🔽 ไม่ต้องเปลี่ยนไอคอน
 }
 
-// แก้ไข window.onload ให้เรียก loadSidebarState ด้วย
+// แก้ไข window.onload ให้เรียก loadSidebarState
 window.onload = () => {
     fetchData();
     loadSidebarState();
