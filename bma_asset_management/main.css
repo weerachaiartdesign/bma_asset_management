@@ -1,82 +1,79 @@
-/* version 00042 */
+/* version 00043 */
 body {
     font-family: 'Sarabun', sans-serif;
-    color: #334155;
-    background-color: #f8fafc;
     margin: 0;
 }
 
-/* Sidebar Styling */
+/* Sidebar Layout */
 .bkk-sidebar {
     background-color: #12643a !important; 
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100vh;
-    overflow: hidden;
+    z-index: 50;
+    position: relative;
 }
 
-/* สถานะพับเมนู */
+/* เมื่อพับ Sidebar */
 .bkk-sidebar.collapsed {
-    width: 88px;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    width: 80px;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .bkk-sidebar.collapsed .sidebar-text,
 .bkk-sidebar.collapsed .sidebar-version,
 .bkk-sidebar.collapsed .sidebar-title-text {
-    opacity: 0;
-    visibility: hidden;
-    width: 0;
-    display: none;
+    display: none !important;
 }
 
 .bkk-sidebar.collapsed .nav-link {
     justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 12px 0;
 }
 
 .bkk-sidebar.collapsed .nav-link svg {
-    margin: 0;
+    width: 24px;
+    height: 24px;
 }
 
 /* Nav Links */
 .nav-link {
     color: rgba(255, 255, 255, 0.6);
     background: transparent;
-    border: none;
-    outline: none;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    white-space: nowrap;
+    border-radius: 12px;
+    margin-bottom: 4px;
 }
 
 .nav-link.active {
     background: #0ea85d !important; 
     color: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Main Content & Scroll */
+/* Main Content Scroll */
 #main-content {
     overflow-y: auto !important;
-    overflow-x: hidden;
     height: 100%;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Custom Scrollbar */
+/* Scrollbar Styling */
 #main-content::-webkit-scrollbar { width: 6px; }
 #main-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-/* Spinner */
-.spinner {
-    border: 3px solid #f1f5f9;
-    border-top: 3px solid #12643a;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+/* Hamburger Button Hover */
+button[onclick="toggleSidebar()"] {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+button[onclick="toggleSidebar()"]:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.animate-in {
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
