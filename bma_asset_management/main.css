@@ -1,31 +1,16 @@
-/* version 00039 */
+/* version 00040 */
 body {
     font-family: 'Sarabun', sans-serif;
     color: #334155;
     background-color: #f8fafc;
 }
 
-/* Sidebar Styling */
-.bkk-sidebar {
-    background-color: #12643a !important; /* บังคับใช้สีเขียว กทม. */
-    transition: all 0.3s ease;
+/* Sidebar & Mobile Nav Base Styling */
+.bkk-sidebar, .md\:hidden.fixed.bottom-0 {
+    background-color: #12643a !important; /* สีเขียว กทม. */
 }
 
-.bkk-sidebar.collapsed {
-    width: 85px;
-}
-
-.bkk-sidebar.collapsed .sidebar-text,
-.bkk-sidebar.collapsed .sidebar-version,
-.bkk-sidebar.collapsed .sidebar-title-text p {
-    display: none;
-}
-
-.bkk-sidebar.collapsed .sidebar-title-text h1 {
-    font-size: 0.75rem;
-}
-
-/* Nav Links ใน Sidebar */
+/* Nav Links ใน Sidebar (Desktop) */
 .nav-link {
     color: rgba(255, 255, 255, 0.6);
     background: transparent;
@@ -39,9 +24,35 @@ body {
 }
 
 .nav-link.active {
-    background: #0ea85d !important; /* สีเขียวสว่างสำหรับปุ่มที่เลือก ตามรูป 01 */
+    background: #0ea85d !important; /* สีเขียวสว่างสำหรับปุ่มที่เลือก */
     color: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Nav Buttons Styling */
+#m-btn-dashboard, #m-btn-inventory {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+/* เมื่อ Mobile Button ถูกเลือก */
+#m-btn-dashboard.text-white, #m-btn-inventory.text-white {
+    color: white !important;
+    opacity: 1;
+}
+
+#m-btn-dashboard.text-white\/50, #m-btn-inventory.text-white\/50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* สำหรับ index.js ในการสลับสีปุ่ม Mobile */
+.mobile-active {
+    color: white !important;
+}
+
+.mobile-inactive {
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Scroll Management */
