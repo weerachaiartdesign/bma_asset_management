@@ -1,5 +1,5 @@
 /**
- * version 00050
+ * version 00051
  * ไฟล์: main.css
  * หน้าที่: จัดการสไตล์หลักของระบบ รวมถึง Sidebar แบบพับได้
  */
@@ -44,29 +44,32 @@
     display: none;
 }
 
-/* ปรับตำแหน่งปุ่ม Hamburger เมื่อ sidebar พับ */
-.bkk-sidebar.collapsed button {
-    position: absolute;
-    right: -12px;
-    top: 24px;
-    background: #12643a;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
+/* 🔽 ลบส่วนของปุ่ม Hamburger ที่ตำแหน่ง absolute ออก (ไม่จำเป็นแล้ว) */
 
 /* Animation สำหรับ content เมื่อ sidebar เปลี่ยนขนาด */
 #main-content {
     transition: width 0.3s ease-in-out;
 }
 
-/* Responsive: เมื่อ sidebar พับในขนาดกลางขึ้นไป */
-@media (min-width: 768px) {
-    .bkk-sidebar.collapsed + .flex-1 {
-        margin-left: 0;
+/* Responsive: แสดงปุ่ม Hamburger เฉพาะบนมือถือและแท็บเล็ต */
+@media (min-width: 768px) and (max-width: 1024px) {
+    #hamburgerBtn {
+        display: flex !important;
     }
+}
+
+@media (min-width: 1025px) {
+    #hamburgerBtn {
+        display: flex !important;
+    }
+}
+
+/* ปุ่ม Hamburger สวยงาม */
+#hamburgerBtn {
+    transition: all 0.2s ease;
+}
+
+#hamburgerBtn:hover {
+    background-color: #f1f5f9;
+    transform: scale(1.05);
 }
