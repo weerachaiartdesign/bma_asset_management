@@ -1,10 +1,9 @@
-/* version 00041 */
+/* version 00042 */
 body {
     font-family: 'Sarabun', sans-serif;
     color: #334155;
     background-color: #f8fafc;
     margin: 0;
-    padding: 0;
 }
 
 /* Sidebar Styling */
@@ -12,29 +11,45 @@ body {
     background-color: #12643a !important; 
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100vh;
+    overflow: hidden;
 }
 
+/* สถานะพับเมนู */
 .bkk-sidebar.collapsed {
-    width: 85px;
+    width: 88px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
 }
 
 .bkk-sidebar.collapsed .sidebar-text,
 .bkk-sidebar.collapsed .sidebar-version,
 .bkk-sidebar.collapsed .sidebar-title-text {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
     display: none;
 }
 
-/* Nav Links ใน Sidebar */
+.bkk-sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.bkk-sidebar.collapsed .nav-link svg {
+    margin: 0;
+}
+
+/* Nav Links */
 .nav-link {
     color: rgba(255, 255, 255, 0.6);
     background: transparent;
     border: none;
     outline: none;
-}
-
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .nav-link.active {
@@ -43,29 +58,17 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Scroll Management: สำคัญมาก */
+/* Main Content & Scroll */
 #main-content {
-    overflow-y: auto !important; /* บังคับให้ Scroll ในแนวตั้งได้ */
+    overflow-y: auto !important;
     overflow-x: hidden;
     height: 100%;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* สำหรับ iOS ให้เลื่อนลื่นไหล */
+    -webkit-overflow-scrolling: touch;
 }
 
-/* ปรับแต่ง Scrollbar ให้ดูสวยงาม (สำหรับ Chrome/Edge) */
-#main-content::-webkit-scrollbar {
-    width: 6px;
-}
-#main-content::-webkit-scrollbar-track {
-    background: transparent;
-}
-#main-content::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-#main-content::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+/* Custom Scrollbar */
+#main-content::-webkit-scrollbar { width: 6px; }
+#main-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
 /* Spinner */
 .spinner {
@@ -77,12 +80,3 @@ body {
     animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* Utility Classes สำหรับหน้ากากตอนเปลี่ยน Tab */
-.animate-in {
-    animation: fadeIn 0.4s ease-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
