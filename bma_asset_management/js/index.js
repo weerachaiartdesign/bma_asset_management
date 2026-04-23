@@ -1,7 +1,7 @@
 /**
- * version 00042
+ * version 00043
  * ไฟล์: index.js
- * หน้าที่: จัดการการนำทาง, การพับเมนู, และการโหลดข้อมูล
+ * หน้าที่: จัดการการนำทาง, การพับเมนู, และควบคุมการวาดกราฟ
  */
 
 let globalData = [];    
@@ -27,13 +27,15 @@ function toggleSidebar() {
     if (sidebar) {
         sidebar.classList.toggle('collapsed');
         
-        // บันทึกสถานะไว้ใน LocalStorage เพื่อให้รีเฟรชแล้วยังคงเดิม (Option)
+        // บันทึกสถานะไว้ใน LocalStorage
         const isCollapsed = sidebar.classList.contains('collapsed');
         localStorage.setItem('sidebarCollapsed', isCollapsed);
         
-        // แจ้งเตือน Chart ให้ปรับขนาดตามความกว้างใหม่
+        // สำคัญ: ต้องแจ้งให้ Chart ปรับขนาดตามพื้นที่ที่เปลี่ยนไป
         setTimeout(() => {
-            Object.values(charts).forEach(chart => chart.resize());
+            Object.values(charts).forEach(chart => {
+                if (typeof chart.resize === 'function') chart.resize();
+            });
         }, 300);
     }
 }
@@ -56,7 +58,7 @@ async function fetchData() {
             loading.style.opacity = '0';
             setTimeout(() => {
                 loading.classList.add('hidden');
-                // ตรวจสอบสถานะ Sidebar ที่บันทึกไว้
+                // คืนค่าสถานะ Sidebar จาก LocalStorage
                 if (localStorage.getItem('sidebarCollapsed') === 'true') {
                     document.getElementById('sidebar')?.classList.add('collapsed');
                 }
@@ -79,7 +81,7 @@ function switchTab(tabId) {
 }
 
 /**
- * renderCurrentPage: แสดงผลหน้าปัจจุบัน
+ * renderCurrentPage: แสดงผลหน้าปัจจุบัน และสั่งวาดกราฟใหม่
  */
 async function renderCurrentPage() {
     const mainContent = document.getElementById('main-content');
@@ -95,14 +97,24 @@ async function renderCurrentPage() {
         mainContent.innerHTML = html;
         pageTitle.innerText = currentTab === 'dashboard' ? 'ภาพรวมระบบ' : 'รายการทรัพย์สิน';
 
+        // หลังจากฉีด HTML เข้าไปแล้ว ต้องสั่งให้ฟังก์ชันในไฟล์อื่นทำงาน
         if (currentTab === 'dashboard') {
-            if (typeof renderDesktopDashboard === 'function' && typeof renderMobileDashboard === 'function') {
-                isMobile ? renderMobileDashboard(globalData) : renderDesktopDashboard(globalData);
-            }
+            // รอให้ DOM อัปเดตแป๊บหนึ่งก่อนวาดกราฟ
+            setTimeout(() => {
+                if (isMobile) {
+                    if (typeof renderMobileDashboard === 'function') renderMobileDashboard(globalData);
+                } else {
+                    if (typeof renderDesktopDashboard === 'function') renderDesktopDashboard(globalData);
+                }
+            }, 50);
         } else {
-            if (typeof renderDesktopTable === 'function' && typeof renderMobileTable === 'function') {
-                isMobile ? renderMobileTable(globalData) : renderDesktopTable(globalData);
-            }
+            setTimeout(() => {
+                if (isMobile) {
+                    if (typeof renderMobileTable === 'function') renderMobileTable(globalData);
+                } else {
+                    if (typeof renderDesktopTable === 'function') renderDesktopTable(globalData);
+                }
+            }, 50);
         }
     } catch (err) {
         mainContent.innerHTML = `<div class="p-8 text-red-500 font-bold">เกิดข้อผิดพลาด: ${err.message}</div>`;
@@ -118,8 +130,7 @@ function updateNavUI() {
         // Desktop
         const btn = document.getElementById(`btn-${t}`);
         if (btn) {
-            if (t === currentTab) btn.classList.add('active');
-            else btn.classList.remove('active');
+            t === currentTab ? btn.classList.add('active') : btn.classList.remove('active');
         }
         // Mobile
         const mBtn = document.getElementById(`m-btn-${t}`);
@@ -135,6 +146,9 @@ function updateNavUI() {
     });
 }
 
+/**
+ * filterTable: ฟังก์ชันค้นหา
+ */
 function filterTable() {
     const query = document.getElementById('searchInput')?.value.toLowerCase() || "";
     const filtered = globalData.filter(item => 
@@ -150,6 +164,9 @@ function filterTable() {
     }
 }
 
+/**
+ * groupAndSortData: ช่วยจัดกลุ่มข้อมูล
+ */
 function groupAndSortData(data, key, limit) {
     const counts = data.reduce((acc, curr) => {
         const val = curr[key] || 'ไม่ระบุ';
