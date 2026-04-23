@@ -1,21 +1,4 @@
-<!-- version 00038 -->
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BMA Assets Management - ระบบจัดการทรัพย์สิน กทม.</title>
-    <link rel="stylesheet" href="css/main.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-slate-50 font-['Sarabun'] overflow-hidden">
-
-    <div id="loading" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="spinner mb-4"></div>
-        <p id="loading-text" class="text-slate-400 text-sm font-bold">BMA Assets</p>
-    </div><!-- version 00034 -->
+<!-- version 00034 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -100,76 +83,5 @@
     <script src="js/dashboard.js"></script>     <!-- Logic ของหน้าสรุปผล -->
     <script src="js/assets-list.js"></script>   <!-- Logic ของหน้าแสดงรายการ -->
     <script src="js/index.js"></script>         <!-- ตัวควบคุมหลัก -->
-</body>
-</html>
-
-
-    <div class="flex h-screen w-full">
-        <!-- Sidebar ตามรูป 01 -->
-        <nav id="sidebar" class="hidden md:flex bkk-sidebar shadow-xl">
-            <div class="p-6 mb-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <div class="w-9 h-9 bg-white rounded-lg flex-shrink-0 flex items-center justify-center">
-                            <img src="https://www.bangkok.go.th/assets/images/logo_bma.png" alt="BMA" class="w-7 h-7 object-contain" onerror="this.parentElement.innerHTML='B'">
-                        </div>
-                        <div class="sidebar-title-text text-white">
-                            <p class="text-[10px] font-bold opacity-60 uppercase leading-none">BMA Assets</p>
-                            <p class="text-sm font-bold leading-tight">Management</p>
-                        </div>
-                    </div>
-                    <!-- ปุ่มพับ Sidebar -->
-                    <button onclick="toggleSidebar()" class="text-white opacity-40 hover:opacity-100 transition-opacity">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="flex-1">
-                <button id="btn-dashboard" onclick="switchTab('dashboard')" class="nav-link active w-full border-none cursor-pointer">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="sidebar-text">Dashboard</span>
-                </button>
-                <button id="btn-inventory" onclick="switchTab('inventory')" class="nav-link w-full border-none cursor-pointer">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    <span class="sidebar-text">รายการทรัพย์สิน</span>
-                </button>
-            </div>
-            
-            <div class="p-4 sidebar-version">
-                <p class="text-[9px] text-white/30 font-medium">Version 00038<br>BMA Assets System</p>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-w-0">
-            <header class="h-[70px] bg-white border-b border-slate-100 flex items-center justify-between px-6 flex-shrink-0">
-                <h2 id="page-title" class="text-lg font-bold text-slate-800 tracking-tight">รายการทรัพย์สิน</h2>
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live</span>
-                </div>
-            </header>
-            
-            <main id="main-content" class="bg-slate-50/50"></main>
-        </div>
-    </div>
-
-    <!-- Mobile Nav -->
-    <nav class="md:hidden mobile-nav">
-        <button id="m-btn-dashboard" onclick="switchTab('dashboard')" class="active">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-            <span>Dashboard</span>
-        </button>
-        <button id="m-btn-inventory" onclick="switchTab('inventory')">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-            <span>รายการ</span>
-        </button>
-    </nav>
-
-    <script src="js/api-config.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/assets-list.js"></script>
-    <script src="js/index.js"></script>
 </body>
 </html>
