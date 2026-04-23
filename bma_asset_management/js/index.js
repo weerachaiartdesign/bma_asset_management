@@ -1,9 +1,8 @@
 /**
- * version 00045 (Fixed based on 00041)
- * ไฟล์: index.js
- * แก้ไข: เพิ่มฟังก์ชัน toggleSidebar และแก้บั๊กกราฟไม่แสดงด้วย setTimeout
+ * version 00046 (Based on 00041)
+ * แก้ไข: 1. เพิ่ม toggleSidebar() สำหรับปุ่ม Hamburger
+ * 2. เพิ่ม setTimeout ใน renderCurrentPage() เพื่อแก้ปัญหากราฟไม่แสดง
  */
-
 let globalData = [];
 let charts = {};
 let currentTab = 'dashboard';
@@ -20,20 +19,20 @@ window.onresize = () => {
     }
 };
 
-// --- จุดที่แก้ไขที่ 1: เพิ่มฟังก์ชันสำหรับพับเมนู ---
+// --- จุดที่ 1: ฟังก์ชันสำหรับพับเมนู Hamburger ---
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('collapsed');
         
-        // สั่งให้กราฟปรับขนาดตัวเองใหม่หลังจากเมนูพับเสร็จ (300ms ตาม CSS transition)
+        // ให้กราฟปรับขนาดตามพื้นที่ที่เปลี่ยนไป (หน่วงเวลาให้ CSS ย่อเมนูเสร็จก่อน)
         setTimeout(() => {
             Object.values(charts).forEach(chart => {
                 if (chart && typeof chart.resize === 'function') {
                     chart.resize();
                 }
             });
-        }, 300);
+        }, 350);
     }
 }
 // ------------------------------------------
@@ -100,7 +99,7 @@ async function renderCurrentPage() {
         mainContent.innerHTML = await res.text();
         mainContent.scrollTop = 0;
 
-        // --- จุดที่แก้ไขที่ 2: ใช้ setTimeout หน่วงเวลา 100ms เพื่อให้เบราว์เซอร์สร้าง Canvas ให้เสร็จก่อน ---
+        // --- จุดที่ 2: ใช้ setTimeout รอให้เบราว์เซอร์สร้าง HTML (Canvas) ให้เสร็จก่อนวาดกราฟ ---
         setTimeout(() => {
             if (currentTab === 'dashboard') {
                 if (typeof renderDesktopDashboard === 'function' && typeof renderMobileDashboard === 'function') {
@@ -109,7 +108,7 @@ async function renderCurrentPage() {
             } else {
                 filterTable(); 
             }
-        }, 100);
+        }, 150);
         // ---------------------------------------------------------------------------------
 
     } catch (err) {
