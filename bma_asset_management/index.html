@@ -1,4 +1,4 @@
-<!-- version 00041 -->
+<!-- version 00044 (Fixed) -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,6 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#12643a">
     
+    <!-- CSS Load -->
     <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,88 +19,109 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { bma: '#12643a', bmaLight: '#059669' }
+                    colors: { 
+                        bma: '#12643a', 
+                        bmaLight: '#0ea85d',
+                        bmaDark: '#064e3b'
+                    }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-slate-50 font-['Sarabun'] h-screen overflow-hidden">
+<body class="bg-slate-50 font-['Sarabun'] h-screen overflow-hidden flex flex-col md:flex-row">
 
-    <!-- Loading Screen -->
+    <!-- Loading Screen (Higher Z-Index) -->
     <div id="loading" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="spinner mb-6"></div>
-        <p id="loading-text" class="text-slate-500 font-bold animate-pulse">กำลังดึงข้อมูลทรัพย์สินจากระบบ...</p>
+        <div class="w-16 h-16 border-4 border-emerald-100 border-t-emerald-600 rounded-full animate-spin mb-4"></div>
+        <p id="loading-text" class="text-slate-500 font-bold animate-pulse">กำลังเชื่อมต่อฐานข้อมูล กทม...</p>
     </div>
 
-    <!-- โครงสร้างหลักแบบ Flex Container ที่สูงเต็มจอ -->
-    <div class="flex h-screen w-full overflow-hidden">
-        
-        <!-- Sidebar (Desktop): ล็อคอยู่กับที่ -->
-        <nav id="sidebar" class="hidden md:flex flex-col w-72 bkk-sidebar bg-bma text-white p-8 space-y-4 shadow-xl flex-shrink-0">
-            <div class="flex items-center justify-between mb-10 px-2">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-emerald-800 font-black text-xl">B</div>
-                    <div class="sidebar-title-text">
-                        <h1 class="text-xl font-bold tracking-tight leading-none">BMA ASSETS</h1>
-                        <p class="text-[10px] opacity-60">Management System</p>
-                    </div>
+    <!-- Sidebar (Desktop) -->
+    <nav id="sidebar" class="bkk-sidebar hidden md:flex flex-col w-72 text-white shadow-2xl relative">
+        <!-- Sidebar Header & Toggle Button -->
+        <div class="p-6 flex items-center justify-between border-b border-white/10">
+            <div class="flex items-center gap-3 sidebar-title-text">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
                 </div>
-                <button onclick="toggleSidebar()" class="text-white/40 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-            </div>
-            
-            <div class="flex-1 space-y-2">
-                <button id="btn-dashboard" onclick="switchTab('dashboard')" 
-                        class="nav-link active w-full p-4 rounded-2xl flex items-center gap-4 transition-all duration-200 border-none cursor-pointer text-left">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="sidebar-text">ภาพรวมระบบ</span>
-                </button>
-                <button id="btn-inventory" onclick="switchTab('inventory')" 
-                        class="nav-link w-full p-4 rounded-2xl flex items-center gap-4 transition-all duration-200 border-none cursor-pointer text-left">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    <span class="sidebar-text">รายการทรัพย์สิน</span>
-                </button>
-            </div>
-
-            <div class="sidebar-version pt-4 border-t border-white/10 flex-shrink-0">
-                <p class="text-[9px] text-white/30 font-medium tracking-widest uppercase">VERSION 00041</p>
-            </div>
-        </nav>
-
-        <!-- ฝั่งขวา (Content Area): มี Header และพื้นที่เลื่อนข้อมูล -->
-        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-            <header class="bg-white border-b border-slate-100 p-6 flex justify-between items-center z-10 flex-shrink-0 shadow-sm">
-                <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live System</span>
+                <div>
+                    <h1 class="font-bold leading-none tracking-tight">BMA ASSETS</h1>
+                    <span class="text-[10px] opacity-60 uppercase">Management System</span>
                 </div>
-            </header>
-            
-            <!-- พื้นที่แสดงข้อมูลหลัก: ต้องมี overflow-y-auto เพื่อให้เลื่อนได้ -->
-            <div id="main-content" class="flex-1 overflow-y-auto bg-slate-50/50 pb-24 md:pb-8">
-                <!-- ข้อมูลจะถูกฉีดที่นี่ -->
             </div>
+            <!-- Hamburger Button (Desktop Toggle) -->
+            <button id="sidebar-toggle-btn" onclick="toggleSidebar()" class="p-2 hover:bg-white/10 rounded-lg transition-colors outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
         </div>
 
-        <!-- Mobile Bottom Nav: ล็อคอยู่ด้านล่างสุดของหน้าจอ -->
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-bma border-t border-white/10 flex justify-around p-3 pb-6 z-[60] shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
+        <!-- Navigation Links -->
+        <div class="flex-grow py-6 space-y-1">
+            <button id="btn-dashboard" onclick="switchTab('dashboard')" class="nav-link active flex items-center gap-4 w-[calc(100%-24px)] px-4 py-3 mx-3">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+                <span class="sidebar-text font-bold">แผงควบคุม</span>
+            </button>
+
+            <button id="btn-inventory" onclick="switchTab('inventory')" class="nav-link flex items-center gap-4 w-[calc(100%-24px)] px-4 py-3 mx-3">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                <span class="sidebar-text font-bold">รายการทรัพย์สิน</span>
+            </button>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer p-6 border-t border-white/10 bg-black/10">
+            <p class="text-[10px] opacity-40 text-center uppercase tracking-widest">Version 00044 (Build 2024)</p>
+        </div>
+    </nav>
+
+    <!-- Main View Area -->
+    <main class="flex-grow flex flex-col min-w-0 relative h-full">
+        <!-- Top Bar (Desktop Only) -->
+        <header class="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
+            <h2 id="page-title" class="text-xl font-bold text-slate-700">ภาพรวมระบบ</h2>
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <span class="text-emerald-700 font-bold text-xs">AD</span>
+                </div>
+                <span class="text-sm font-bold text-slate-500">Administrator</span>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Container -->
+        <div id="main-content" class="flex-grow overflow-y-auto bg-slate-50 relative">
+            <!-- ข้อมูลจาก dashboard.html หรือ assets-list.html จะถูกฉีดเข้าที่นี่ -->
+        </div>
+
+        <!-- Mobile Bottom Nav -->
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-bma border-t border-white/10 flex justify-around p-3 pb-6 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.2)]">
             <button id="m-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 transition-colors text-white outline-none">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
-                <span class="text-[10px] font-bold">สรุปผล</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                </svg>
+                <span class="text-[10px] font-bold">Dashboard</span>
             </button>
-            <button id="m-btn-inventory" onclick="switchTab('inventory')" class="flex flex-col items-center gap-1 text-white/50 outline-none">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg>
-                <span class="text-[10px] font-bold">รายการ</span>
+            <button id="m-btn-inventory" onclick="switchTab('inventory')" class="flex flex-col items-center gap-1 transition-colors text-white/50 outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+                <span class="text-[10px] font-bold">Inventory</span>
             </button>
         </div>
-    </div>
+    </main>
 
+    <!-- Script Loads -->
     <script src="js/api-config.js"></script>
+    <script src="js/index.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/assets-list.js"></script>
-    <script src="js/index.js"></script>
 </body>
 </html>
