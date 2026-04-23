@@ -1,5 +1,5 @@
 /**
- * version 00049
+ * version 00050
  * ไฟล์: index.js
  * หน้าที่: จัดการการแสดงผลข้อมูลทรัพย์สินในรูปแบบตาราง (Desktop) และการ์ด (Mobile)
  * รองรับ: Pagination (25/50/100/ทั้งหมด), การค้นหาแบบ Real-time, Responsive Desktop/Mobile
@@ -28,18 +28,70 @@ window.onresize = () => {
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('collapsed');
-        
-        setTimeout(() => {
-            Object.values(charts).forEach(chart => {
-                if (chart && typeof chart.resize === 'function') {
-                    chart.resize();
-                }
-            });
-        }, 350);
+    if (!sidebar) return;
+    
+    // Toggle class collapsed
+    sidebar.classList.toggle('collapsed');
+    
+    // เก็บสถานะการพับลง localStorage เพื่อจำไว้เมื่อ refresh หน้า
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    localStorage.setItem('sidebarCollapsed', isCollapsed);
+    
+    // เปลี่ยนไอคอนปุ่ม Hamburger (เป็นไอคอน X เมื่อพับ)
+    const hamburgerBtn = sidebar.querySelector('button');
+    if (hamburgerBtn) {
+        if (isCollapsed) {
+            hamburgerBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+        } else {
+            hamburgerBtn.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            `;
+        }
+    }
+    
+    // ปรับขนาดกราฟหลังจาก sidebar เปลี่ยนขนาด (หน่วงเวลาให้ CSS transition เสร็จ)
+    setTimeout(() => {
+        Object.values(charts).forEach(chart => {
+            if (chart && typeof chart.resize === 'function') {
+                chart.resize();
+            }
+        });
+        // Trigger resize event เพื่อให้ Chart.js ปรับขนาดเอง
+        window.dispatchEvent(new Event('resize'));
+    }, 350);
+}
+
+// โหลดสถานะ sidebar ที่เคยพับไว้ (ถ้ามี) เมื่อหน้าโหลด
+function loadSidebarState() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+        // เปลี่ยนไอคอนเป็น X
+        const hamburgerBtn = sidebar.querySelector('button');
+        if (hamburgerBtn) {
+            hamburgerBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+        }
     }
 }
+
+// แก้ไข window.onload ให้เรียก loadSidebarState ด้วย
+window.onload = () => {
+    fetchData();
+    loadSidebarState();
+};
 
 // ==================== DATA FETCHING ====================
 
