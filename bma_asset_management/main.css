@@ -1,4 +1,4 @@
-/* version 00046 (Based on 00041) */
+/* version 00047 */
 body {
     font-family: 'Sarabun', sans-serif;
     color: #334155;
@@ -7,37 +7,50 @@ body {
     padding: 0;
 }
 
-/* Sidebar Styling */
+/* Sidebar Layout & Animation */
 .bkk-sidebar {
     background-color: #12643a !important; 
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
     height: 100vh;
 }
 
-/* 1. แก้ไขให้พับได้จริง โดยบังคับใช้ !important เพื่อชนะ Tailwind */
+/* จุดสำคัญ: บังคับความกว้างเมื่อพับ (collapsed)
+   ต้องใช้ !important เพื่อชนะ Tailwind class 'w-72' 
+*/
 .bkk-sidebar.collapsed {
-    width: 85px !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+    width: 80px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
 }
 
+/* ซ่อนข้อความเมื่อพับเมนู */
 .bkk-sidebar.collapsed .sidebar-text,
 .bkk-sidebar.collapsed .sidebar-version,
 .bkk-sidebar.collapsed .sidebar-title-text {
     display: none !important;
 }
 
-/* จัดให้ Icon อยู่ตรงกลางเมื่อพับ */
+/* ปรับตำแหน่งไอคอนให้อยู่กึ่งกลางเมื่อพับ */
 .bkk-sidebar.collapsed .nav-link {
     justify-content: center;
     padding-left: 0;
     padding-right: 0;
 }
-.bkk-sidebar.collapsed .nav-link svg {
-    margin-right: 0 !important;
+
+/* Main Content Area */
+#main-content {
+    overflow-y: auto !important;
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Nav Links ใน Sidebar */
+/* กราฟ */
+canvas {
+    max-width: 100% !important;
+}
+
+/* Nav Links */
 .nav-link {
     color: rgba(255, 255, 255, 0.6);
     background: transparent;
@@ -45,6 +58,7 @@ body {
     outline: none;
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .nav-link:hover {
@@ -58,21 +72,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Scroll Management: สำคัญมาก */
-#main-content {
-    overflow-y: auto !important; /* บังคับให้ Scroll ในแนวตั้งได้ */
-    overflow-x: hidden;
-    height: 100%;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* สำหรับ iOS ให้เลื่อนลื่นไหล */
-}
-
-/* 2. ป้องกันกราฟล้นและแก้กราฟเบี้ยวเวลาพับเมนู */
-canvas {
-    max-width: 100% !important;
-}
-
-/* ปรับแต่ง Scrollbar ให้ดูสวยงาม (สำหรับ Chrome/Edge) */
+/* Scrollbar Customization */
 #main-content::-webkit-scrollbar {
     width: 6px;
 }
@@ -83,11 +83,8 @@ canvas {
     background: #cbd5e1;
     border-radius: 10px;
 }
-#main-content::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
 
-/* Spinner */
+/* Loading Spinner */
 .spinner {
     border: 3px solid #f1f5f9;
     border-top: 3px solid #12643a;
@@ -98,7 +95,7 @@ canvas {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Utility Classes สำหรับหน้ากากตอนเปลี่ยน Tab */
+/* Fade-in Animation */
 .animate-in {
     animation: fadeIn 0.4s ease-out;
 }
