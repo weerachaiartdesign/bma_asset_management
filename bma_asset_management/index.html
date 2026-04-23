@@ -1,4 +1,4 @@
-<!-- version 00051 -->
+<!-- version 00052 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#12643a">
     
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
@@ -32,11 +32,11 @@
         <p id="loading-text" class="text-slate-500 font-bold animate-pulse">กำลังดึงข้อมูลทรัพย์สินจากระบบ...</p>
     </div>
 
-    <!-- โครงสร้างหลักแบบ Flex Container ที่สูงเต็มจอ -->
+    <!-- โครงสร้างหลัก -->
     <div class="flex h-screen w-full overflow-hidden">
         
-        <!-- Sidebar (Desktop): ล็อคอยู่กับที่ -->
-        <nav id="sidebar" class="hidden md:flex flex-col w-72 bkk-sidebar bg-bma text-white p-8 space-y-4 shadow-xl flex-shrink-0">
+        <!-- Sidebar (Desktop) -->
+        <nav id="sidebar" class="hidden md:flex flex-col w-72 bkk-sidebar bg-bma text-white p-8 space-y-4 shadow-xl flex-shrink-0 transition-all duration-300">
             <div class="flex items-center justify-between mb-10 px-2 relative">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-emerald-800 font-black text-xl">B</div>
@@ -45,7 +45,6 @@
                         <p class="text-[10px] opacity-60">Management System</p>
                     </div>
                 </div>
-                <!-- 🔽 ลบปุ่ม Hamburger ออกจากตรงนี้ -->
             </div>
             
             <div class="flex-1 space-y-2 mt-4">
@@ -62,17 +61,17 @@
             </div>
 
             <div class="sidebar-version pt-4 border-t border-white/10 flex-shrink-0">
-                <p class="text-[9px] text-white/30 font-medium tracking-widest uppercase">VERSION 00051</p>
+                <p class="text-[9px] text-white/30 font-medium tracking-widest uppercase">VERSION 00052</p>
             </div>
         </nav>
 
-        <!-- ฝั่งขวา (Content Area): มี Header และพื้นที่เลื่อนข้อมูล -->
-        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <!-- ฝั่งขวา (Content Area) -->
+        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden transition-all duration-300">
             <header class="bg-white border-b border-slate-100 p-6 flex justify-between items-center z-10 flex-shrink-0 shadow-sm">
-                <!-- 🔽 เพิ่มปุ่ม Hamburger ที่นี่ (ด้านซ้ายของหัวข้อ) -->
                 <div class="flex items-center gap-4">
+                    <!-- ปุ่ม Hamburger -->
                     <button id="hamburgerBtn" onclick="toggleSidebar()" 
-                            class="md:hidden lg:flex text-slate-600 hover:text-bma transition-colors cursor-pointer p-2 rounded-lg hover:bg-slate-100">
+                            class="text-slate-600 hover:text-bma transition-colors cursor-pointer p-2 rounded-lg hover:bg-slate-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -85,7 +84,6 @@
                 </div>
             </header>
             
-            <!-- พื้นที่แสดงข้อมูลหลัก -->
             <div id="main-content" class="flex-1 overflow-y-auto bg-slate-50/50 pb-24 md:pb-8">
                 <!-- ข้อมูลจะถูกฉีดที่นี่ -->
             </div>
