@@ -1,17 +1,16 @@
 /**
- * version 00034
+ * version 00042
  * ไฟล์: index.js
- * หน้าที่: หัวใจหลักของระบบ จัดการการนำทาง (Navigation), การโหลดข้อมูล (Fetch API), และการสลับหน้าจอตามอุปกรณ์ (Responsive)
+ * หน้าที่: จัดการการนำทาง, การพับเมนู, และการโหลดข้อมูล
  */
 
-let globalData = [];    // เก็บข้อมูลทรัพย์สินทั้งหมดที่โหลดมาจาก API
-let charts = {};        // เก็บ Instance ของ Chart.js เพื่อใช้ทำลายกราฟเก่าก่อนสร้างใหม่
+let globalData = [];    
+let charts = {};        
 let currentTab = 'dashboard'; 
 let isMobile = window.innerWidth < 768;
 
-window.onload = fetchData; // เริ่มโหลดข้อมูลทันทีเมื่อเปิดเว็บ
+window.onload = fetchData; 
 
-// ตรวจสอบการเปลี่ยนขนาดหน้าจอเพื่อสลับ Layout
 window.onresize = () => {
     const newIsMobile = window.innerWidth < 768;
     if(newIsMobile !== isMobile) {
@@ -21,76 +20,81 @@ window.onresize = () => {
 };
 
 /**
- * fetchData: ดึงข้อมูลจาก Google Sheets (ผ่าน Web App URL)
+ * toggleSidebar: ฟังก์ชันสำหรับพับ/กางเมนู Sidebar (Desktop)
+ */
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+        
+        // บันทึกสถานะไว้ใน LocalStorage เพื่อให้รีเฟรชแล้วยังคงเดิม (Option)
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+        
+        // แจ้งเตือน Chart ให้ปรับขนาดตามความกว้างใหม่
+        setTimeout(() => {
+            Object.values(charts).forEach(chart => chart.resize());
+        }, 300);
+    }
+}
+
+/**
+ * fetchData: ดึงข้อมูลจาก API
  */
 async function fetchData() {
     const loadingText = document.getElementById('loading-text');
     try {
-        if (typeof WEB_APP_URL === 'undefined') throw new Error("กรุณาตั้งค่า WEB_APP_URL ใน api-config.js");
+        if (typeof WEB_APP_URL === 'undefined') throw new Error("กรุณาตั้งค่า WEB_APP_URL");
         
         const response = await fetch(WEB_APP_URL);
         globalData = await response.json();
         
         if (globalData.error) throw new Error(globalData.error);
         
-        // ซ่อนหน้า Loading เมื่อโหลดสำเร็จ
         const loading = document.getElementById('loading');
         if (loading) {
             loading.style.opacity = '0';
-            setTimeout(() => loading.classList.add('hidden'), 500);
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                // ตรวจสอบสถานะ Sidebar ที่บันทึกไว้
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    document.getElementById('sidebar')?.classList.add('collapsed');
+                }
+                renderCurrentPage();
+            }, 500);
         }
-        renderCurrentPage();
     } catch (err) {
-        if (loadingText) loadingText.innerHTML = `<span class="text-red-600">เกิดข้อผิดพลาด: ${err.message}</span>`;
+        if (loadingText) loadingText.innerText = "ข้อผิดพลาด: " + err.message;
         console.error(err);
     }
 }
 
 /**
- * switchTab: สลับเมนูหน้าจอ (Dashboard / รายการทรัพย์สิน)
+ * switchTab: สลับหน้า Dashboard / Inventory
  */
 function switchTab(tabId) {
+    if (currentTab === tabId) return;
     currentTab = tabId;
-    updateNavUI(tabId);
     renderCurrentPage();
 }
 
 /**
- * updateNavUI: เปลี่ยนสีและสไตล์ของเมนูที่ถูกเลือก
- */
-function updateNavUI(tabId) {
-    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-    const btn = document.getElementById('btn-' + tabId);
-    if(btn) btn.classList.add('active');
-
-    // อัปเดตเมนู Mobile
-    const mDash = document.getElementById('m-btn-dashboard');
-    const mInv = document.getElementById('m-btn-inventory');
-    if(mDash && mInv) {
-        const activeColor = '#059669', inactiveColor = '#94a3b8';
-        mDash.style.color = tabId === 'dashboard' ? activeColor : inactiveColor;
-        mInv.style.color = tabId === 'inventory' ? activeColor : inactiveColor;
-    }
-    
-    const titleEl = document.getElementById('page-title');
-    if(titleEl) titleEl.innerText = tabId === 'dashboard' ? 'Dashboard สรุปภาพรวม' : 'บัญชีทรัพย์สินทั้งหมด';
-}
-
-/**
- * renderCurrentPage: โหลดไฟล์ HTML Template และส่งข้อมูลไป Render ตามหน้าจอที่เลือก
+ * renderCurrentPage: แสดงผลหน้าปัจจุบัน
  */
 async function renderCurrentPage() {
     const mainContent = document.getElementById('main-content');
-    if (!mainContent) return;
-
-    const fileName = currentTab === 'dashboard' ? 'dashboard.html' : 'assets-list.html';
+    const pageTitle = document.getElementById('page-title');
     
-    try {
-        const res = await fetch(fileName);
-        if (!res.ok) throw new Error(`โหลดไฟล์เทมเพลตไม่สำเร็จ (${fileName})`);
-        mainContent.innerHTML = await res.text();
+    updateNavUI();
 
-        // ตรวจสอบหน้าและส่งข้อมูลไปให้ฟังก์ชันใน dashboard.js หรือ assets-list.js
+    try {
+        const fileName = currentTab === 'dashboard' ? 'dashboard.html' : 'assets-list.html';
+        const response = await fetch(fileName);
+        const html = await response.text();
+        
+        mainContent.innerHTML = html;
+        pageTitle.innerText = currentTab === 'dashboard' ? 'ภาพรวมระบบ' : 'รายการทรัพย์สิน';
+
         if (currentTab === 'dashboard') {
             if (typeof renderDesktopDashboard === 'function' && typeof renderMobileDashboard === 'function') {
                 isMobile ? renderMobileDashboard(globalData) : renderDesktopDashboard(globalData);
@@ -101,20 +105,42 @@ async function renderCurrentPage() {
             }
         }
     } catch (err) {
-        mainContent.innerHTML = `<div class="p-8 text-red-500 font-bold">เกิดข้อผิดพลาดในการโหลดเนื้อหา: ${err.message}</div>`;
+        mainContent.innerHTML = `<div class="p-8 text-red-500 font-bold">เกิดข้อผิดพลาด: ${err.message}</div>`;
     }
 }
 
 /**
- * filterTable: ฟังก์ชันค้นหาข้อมูล (เรียกจาก input onkeyup ใน HTML)
+ * updateNavUI: เปลี่ยนสีปุ่มเมนูตามสถานะ Active
  */
+function updateNavUI() {
+    const tabs = ['dashboard', 'inventory'];
+    tabs.forEach(t => {
+        // Desktop
+        const btn = document.getElementById(`btn-${t}`);
+        if (btn) {
+            if (t === currentTab) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+        // Mobile
+        const mBtn = document.getElementById(`m-btn-${t}`);
+        if (mBtn) {
+            if (t === currentTab) {
+                mBtn.classList.remove('text-white/50');
+                mBtn.classList.add('text-white');
+            } else {
+                mBtn.classList.remove('text-white');
+                mBtn.classList.add('text-white/50');
+            }
+        }
+    });
+}
+
 function filterTable() {
     const query = document.getElementById('searchInput')?.value.toLowerCase() || "";
     const filtered = globalData.filter(item => 
         (item.type && item.type.toLowerCase().includes(query)) || 
         (item.id && item.id.toLowerCase().includes(query)) ||
-        (item.dept && item.dept.toLowerCase().includes(query)) ||
-        (item.owner && item.owner.toLowerCase().includes(query))
+        (item.dept && item.dept.toLowerCase().includes(query))
     );
     
     if (isMobile) {
@@ -124,14 +150,13 @@ function filterTable() {
     }
 }
 
-/**
- * groupAndSortData: ฟังก์ชันช่วยจัดกลุ่มข้อมูล (Helper Function)
- */
 function groupAndSortData(data, key, limit) {
     const counts = data.reduce((acc, curr) => {
         const val = curr[key] || 'ไม่ระบุ';
         acc[val] = (acc[val] || 0) + 1;
         return acc;
     }, {});
-    return Object.fromEntries(Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, limit));
+    return Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit);
 }
