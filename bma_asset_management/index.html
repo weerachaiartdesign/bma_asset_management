@@ -1,4 +1,4 @@
-<!-- version 00049 -->
+<!-- version 00051 -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#12643a">
     
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
@@ -45,10 +45,7 @@
                         <p class="text-[10px] opacity-60">Management System</p>
                     </div>
                 </div>
-                <!-- ปุ่มพับเมนู: ตรวจสอบให้แน่ใจว่า z-index มากพอและ cursor เป็น pointer -->
-                <button onclick="toggleSidebar()" class="text-white/40 hover:text-white transition-colors cursor-pointer z-50 p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
+                <!-- 🔽 ลบปุ่ม Hamburger ออกจากตรงนี้ -->
             </div>
             
             <div class="flex-1 space-y-2 mt-4">
@@ -65,27 +62,36 @@
             </div>
 
             <div class="sidebar-version pt-4 border-t border-white/10 flex-shrink-0">
-                <p class="text-[9px] text-white/30 font-medium tracking-widest uppercase">VERSION 00049</p>
+                <p class="text-[9px] text-white/30 font-medium tracking-widest uppercase">VERSION 00051</p>
             </div>
         </nav>
 
         <!-- ฝั่งขวา (Content Area): มี Header และพื้นที่เลื่อนข้อมูล -->
         <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
             <header class="bg-white border-b border-slate-100 p-6 flex justify-between items-center z-10 flex-shrink-0 shadow-sm">
-                <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">ภาพรวมระบบ</h2>
+                <!-- 🔽 เพิ่มปุ่ม Hamburger ที่นี่ (ด้านซ้ายของหัวข้อ) -->
+                <div class="flex items-center gap-4">
+                    <button id="hamburgerBtn" onclick="toggleSidebar()" 
+                            class="md:hidden lg:flex text-slate-600 hover:text-bma transition-colors cursor-pointer p-2 rounded-lg hover:bg-slate-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">ภาพรวมระบบ</h2>
+                </div>
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live System</span>
                 </div>
             </header>
             
-            <!-- พื้นที่แสดงข้อมูลหลัก: ต้องมี overflow-y-auto เพื่อให้เลื่อนได้ -->
+            <!-- พื้นที่แสดงข้อมูลหลัก -->
             <div id="main-content" class="flex-1 overflow-y-auto bg-slate-50/50 pb-24 md:pb-8">
                 <!-- ข้อมูลจะถูกฉีดที่นี่ -->
             </div>
         </div>
 
-        <!-- Mobile Bottom Nav: ล็อคอยู่ด้านล่างสุดของหน้าจอ -->
+        <!-- Mobile Bottom Nav -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 bg-bma border-t border-white/10 flex justify-around p-3 pb-6 z-[60] shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
             <button id="m-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 transition-colors text-white outline-none">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
