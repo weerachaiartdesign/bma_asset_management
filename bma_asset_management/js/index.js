@@ -1,5 +1,5 @@
 /**
- * version 00048
+ * version 00049
  * แก้ไข: 1. เพิ่ม toggleSidebar() สำหรับปุ่ม Hamburger
  * 2. เพิ่ม setTimeout ใน renderCurrentPage() เพื่อแก้ปัญหากราฟไม่แสดง
  */
@@ -117,12 +117,24 @@ async function renderCurrentPage() {
 }
 
 function filterTable() {
-    const query = document.getElementById('searchInput')?.value.toLowerCase() || "";
-    const rowSelect = document.getElementById('rowSelect');
+    const query = (() => {
+        // ใช้ searchInput ตามอุปกรณ์
+        if (isMobile) {
+            return document.getElementById('searchInputMobile')?.value.toLowerCase() || "";
+        } else {
+            return document.getElementById('searchInput')?.value.toLowerCase() || "";
+        }
+    })();
+    
+    // ใช้ rowSelect ตามอุปกรณ์
+    const rowSelect = isMobile 
+        ? document.getElementById('rowSelectMobile') 
+        : document.getElementById('rowSelectDesktop');
     
     // อ่านค่า rowsPerPage จาก dropdown
     if (rowSelect) {
         rowsPerPage = rowSelect.value === 'All' ? globalData.length : parseInt(rowSelect.value);
+        console.log(`[filterTable] isMobile=${isMobile}, rowsPerPage=${rowsPerPage}`); // debug
     }
 
     // ค้นหาข้อมูลตาม query
