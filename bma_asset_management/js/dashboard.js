@@ -113,7 +113,7 @@ function updateChart(id, type, labels, values) {
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: isDoughnut ? colors : colors,
+                backgroundColor: isDoughnut ? colors : colors[0],
                 borderColor: isDoughnut ? '#ffffff' : 'transparent',
                 borderWidth: isDoughnut ? 2 : 0,
                 borderRadius: isDoughnut ? 0 : 4,
