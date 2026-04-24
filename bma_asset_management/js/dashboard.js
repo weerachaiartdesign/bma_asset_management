@@ -4,23 +4,40 @@
  * หน้าที่: คำนวณข้อมูลทางสถิติและวาดกราฟ (Chart.js) สำหรับหน้า Dashboard
  */
 
-// คลังสีสำหรับกราฟ (20 สี)
+// คลังสีโทนเขียว 20 เฉด (เรียงจากเข้มไปอ่อน)
 const GREEN_COLORS = [
-    '#022c22', '#043a2c', '#064e3b', '#075949', '#065f46',
-    '#056b49', '#047857', '#059063', '#059669', '#0ba773',
-    '#10b981', '#1fbd82', '#34d399', '#4ddcac', '#6ee7b7',
-    '#8aecc5', '#a7f3d0', '#bcf5dc', '#d1fae5', '#ecfdf5'
+    '#022c22',  // 1: เข้มที่สุด
+    '#043a2c',  // 2
+    '#064e3b',  // 3
+    '#075949',  // 4
+    '#065f46',  // 5
+    '#056b49',  // 6
+    '#047857',  // 7
+    '#059063',  // 8
+    '#059669',  // 9
+    '#0ba773',  // 10
+    '#10b981',  // 11
+    '#1fbd82',  // 12
+    '#34d399',  // 13
+    '#4ddcac',  // 14
+    '#6ee7b7',  // 15
+    '#8aecc5',  // 16
+    '#a7f3d0',  // 17
+    '#bcf5dc',  // 18
+    '#d1fae5',  // 19
+    '#ecfdf5'   // 20: อ่อนที่สุด
 ];
 
 /**
  * ฟังก์ชัน getChartColors: ดึงสีตามจำนวนที่ต้องการ
  * @param {number} count - จำนวนสีที่ต้องการ
- * @returns {Array} - รายการสี
+ * @returns {Array} - รายการสี (ไล่เฉดจากเข้มไปอ่อน)
  */
 function getChartColors(count) {
     const colors = [];
     for (let i = 0; i < count; i++) {
-        colors.push(CHART_COLORS[i % CHART_COLORS.length]);
+        // ใช้ modulo เพื่อรองรับกรณีจำนวนมากกว่า 20
+        colors.push(GREEN_COLORS[i % GREEN_COLORS.length]);
     }
     return colors;
 }
@@ -54,7 +71,7 @@ function renderDesktopDashboard(data) {
     const deptLabels = Object.keys(deptMap).slice(0, 10);
     const deptValues = Object.values(deptMap).slice(0, 10);
 
-    // 4. วาดกราฟ (Desktop ใช้แบบแนวตั้งปกติ)
+    // 4. วาดกราฟ (Desktop)
     updateChart('typeChart', 'doughnut', typeLabels, typeValues);
     updateChart('deptChart', 'bar', deptLabels, deptValues);
 }
@@ -78,7 +95,7 @@ function renderMobileDashboard(data) {
         if(el) el.innerText = stats[k].toLocaleString();
     });
     
-    // เตรียมข้อมูลสำหรับกราฟ (จัดกลุ่ม 20 อันดับ แต่แสดง 10 อันดับบน Mobile)
+    // เตรียมข้อมูลสำหรับกราฟ (จัดกลุ่ม 20 อันดับ แต่แสดง 6 อันดับบน Mobile)
     const typeMap = groupAndSortData(data, 'type', 20);
     const deptMap = groupAndSortData(data, 'department', 20);
     
@@ -87,7 +104,7 @@ function renderMobileDashboard(data) {
     const deptLabels = Object.keys(deptMap).slice(0, 10);
     const deptValues = Object.values(deptMap).slice(0, 10);
 
-    // วาดกราฟมือถือ (เปลี่ยนประเภทเป็นแนวนอนทั้งคู่)
+    // วาดกราฟมือถือ (แนวนอนทั้งคู่)
     updateMobileChart('mTypeChart', 'horizontalBar', typeLabels, typeValues);
     updateMobileChart('mDeptChart', 'horizontalBar', deptLabels, deptValues);
 }
@@ -113,7 +130,7 @@ function updateChart(id, type, labels, values) {
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: isDoughnut ? colors : colors[0],
+                backgroundColor: colors,  // ทุกกราฟไล่เฉดสีทั้งหมด
                 borderColor: isDoughnut ? '#ffffff' : 'transparent',
                 borderWidth: isDoughnut ? 2 : 0,
                 borderRadius: isDoughnut ? 0 : 4,
@@ -177,7 +194,7 @@ function updateMobileChart(id, type, labels, values) {
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: isDoughnut ? colors : colors,
+                backgroundColor: colors,  // ทุกกราฟไล่เฉดสีทั้งหมด
                 borderRadius: 4,
                 barPercentage: 0.7,
                 categoryPercentage: 0.8
@@ -235,7 +252,7 @@ function updateMobileChart(id, type, labels, values) {
 function groupAndSortData(data, key, limit) {
     const counts = data.reduce((acc, curr) => {
         let val = curr[key] || 'ไม่ระบุ';
-        // รองรับกรณี department เก็บใน dept หรือ responsible_person
+        // รองรับกรณี department เก็บใน dept
         if (key === 'department') {
             if ((!val || val === 'ไม่ระบุ') && curr.dept) val = curr.dept;
             if ((!val || val === 'ไม่ระบุ') && curr.responsible_person) val = curr.responsible_person;
@@ -244,6 +261,5 @@ function groupAndSortData(data, key, limit) {
         return acc;
     }, {});
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    // เก็บ limit อันดับ (เผื่อไว้ 20)
     return Object.fromEntries(sorted.slice(0, limit));
 }
