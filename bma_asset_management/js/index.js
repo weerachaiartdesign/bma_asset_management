@@ -1,5 +1,5 @@
 /**
- * version 00052
+ * version 00055
  * ไฟล์: index.js
  * หน้าที่: จัดการการแสดงผลข้อมูลทรัพย์สินในรูปแบบตาราง (Desktop) และการ์ด (Mobile)
  * รองรับ: Pagination (25/50/100/ทั้งหมด), การค้นหาแบบ Real-time, Responsive Desktop/Mobile
