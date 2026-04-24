@@ -61,8 +61,8 @@ function renderMobileTable(data) {
   container.innerHTML = data.map(item => `
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-3 animate-in cursor-pointer active:scale-98 transition-transform" onclick="showAssetDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
       <div class="flex justify-between items-start mb-2">
-        <span class="text-[10px] font-mono font-bold text-slate-400">#${escapeHtml(item.id)}</span>
-        <span class="text-[9px] px-2 py-0.5 rounded-full font-bold ${getStatusClass(item.status)}">
+        <span class="text-[12px] font-mono font-bold text-slate-500">${escapeHtml(item.id)}</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${getStatusClass(item.status)}">
           ${escapeHtml(item.status)}
         </span>
       </div>
