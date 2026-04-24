@@ -13,7 +13,7 @@ function renderDesktopTable(data) {
   if (!body) return;
 
   if (data.length === 0) {
-    body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
+    body.innerHTML = `<table><td colspan="6" class="px-6 py-12 text-center text-slate-400">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</td></tr>`;
     return;
   }
 
@@ -27,11 +27,10 @@ function renderDesktopTable(data) {
         <div class="text-[10px] opacity-60">SN: ${escapeHtml(item.serial || '-')}</div>
       </td>
       <td class="px-6 py-4 text-xs">
-        <!-- ฝ่าย/กลุ่มงาน: พื้นสีเขียวอ่อน -->
-        <div class="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md font-bold">${escapeHtml(item.department || item.dept || '-')}</div>
-        <div class="text-slate-500 mt-1">ที่ตั้ง: ${escapeHtml(item.location_asset || item.location || '-')}</div>
-        <!-- ผู้ดูแล: font-bold ปกติ ไม่มีพื้นสี -->
-        <div class="font-bold text-slate-700 mt-1">ผู้ดูแล: ${escapeHtml(item.responsible_person || item.owner || '-')}</div>
+        <!-- ฝ่าย/กลุ่มงาน: พื้นสีเขียวอ่อน แบบเต็มบรรทัด (block) -->
+        <div class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md font-bold mb-1">${escapeHtml(item.department || item.dept || '-')}</div>
+        <div class="text-slate-500">ที่ตั้ง: ${escapeHtml(item.location_asset || item.location || '-')}</div>
+        <div class="font-bold text-slate-700">ผู้ดูแล: ${escapeHtml(item.responsible_person || item.owner || '-')}</div>
         <div class="text-slate-500">ปฏิบัติงาน: ${escapeHtml(item.workplace || '-')}</div>
       </td>
       <td class="px-6 py-4 text-center">
@@ -70,10 +69,10 @@ function renderMobileTable(data) {
       <h4 class="font-bold text-slate-800 text-sm mb-1">${escapeHtml(item.type)}</h4>
       <div class="text-[11px] text-slate-500 space-y-1 border-l-2 border-slate-100 pl-3">
         <div class="font-bold text-slate-700">${escapeHtml(item.brand || '')} ${escapeHtml(item.model || '')}</div>
-        <!-- หน่วยงาน: ตัวอักษรสีเขียวเข้ม (text-emerald-700) -->
+        <!-- หน่วยงาน: ตัวอักษรสีเขียวเข้ม -->
         <div class="text-emerald-700 font-semibold"><span class="opacity-50">หน่วยงาน:</span> ${escapeHtml(item.department || item.dept || '-')}</div>
         <div><span class="opacity-50">ที่ตั้ง:</span> ${escapeHtml(item.location_asset || item.location || '-')}</div>
-        <!-- ผู้ดูแล: ตัวอักษรสีดำเข้ม (text-slate-800) -->
+        <!-- ผู้ดูแล: ตัวอักษรสีดำเข้ม -->
         <div class="text-slate-800 font-semibold"><span class="opacity-50">ผู้ดูแล:</span> ${escapeHtml(item.responsible_person || item.owner || '-')}</div>
         <div><span class="opacity-50">ปฏิบัติงาน:</span> ${escapeHtml(item.workplace || '-')}</div>
       </div>
