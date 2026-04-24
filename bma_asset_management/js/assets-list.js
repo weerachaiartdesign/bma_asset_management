@@ -19,7 +19,7 @@ function renderDesktopTable(data) {
 
   body.innerHTML = data.map(item => `
     <tr class="hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer" onclick="showAssetDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-      <td class="px-6 py-4 font-mono text-sm font-bold text-slate-400">${escapeHtml(item.id)}</td>
+      <td class="px-6 py-4 font-mono text-sm font-bold text-slate-700">${escapeHtml(item.id)}</td>
       <td class="px-6 py-4 text-sm font-bold text-slate-700">${escapeHtml(item.type)}</td>
       <td class="px-6 py-4 text-xs text-slate-500">
         <div class="font-bold text-slate-700">${escapeHtml(item.brand || '-')}</div>
