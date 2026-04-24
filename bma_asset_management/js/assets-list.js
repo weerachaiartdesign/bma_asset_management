@@ -28,7 +28,7 @@ function renderDesktopTable(data) {
       </td>
       <td class="px-6 py-4 text-xs">
         <!-- ฝ่าย/กลุ่มงาน: พื้นสีเขียวอ่อน แบบเต็มบรรทัด (block) -->
-        <div class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md font-bold mb-1">${escapeHtml(item.department || item.dept || '-')}</div>
+        <div class="text-emerald-600 font-bold mb-1">${escapeHtml(item.department || item.dept || '-')}</div>
         <div class="text-slate-500">ที่ตั้ง: ${escapeHtml(item.location_asset || item.location || '-')}</div>
         <div class="font-bold text-slate-700">ผู้ดูแล: ${escapeHtml(item.responsible_person || item.owner || '-')}</div>
         <div class="text-slate-500">ปฏิบัติงาน: ${escapeHtml(item.workplace || '-')}</div>
