@@ -1,6 +1,6 @@
 /**
  * version 00056
  */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywzVJOsKqj9spvBY2mk4WHVWfcA0uxUqzj6_gOx6UvSf0Oxjo6Ezq6z-DeYWJEbyX7/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRxOnSHGbY43ye-Aj5bfRXVTJ7bXjhPmnGGYp1rHQsB0P5hFqYLRlbAzl0HCUc7eWj/exec";
 
 const GAS_API_URL = WEB_APP_URL;
