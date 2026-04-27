@@ -1,0 +1,158 @@
+<!-- version 00056 -->
+<!-- 
+  ไฟล์: settings-scanner.html
+  หน้าที่: หน้านำเข้าข้อมูลทรัพย์สินด้วย QR Code (สำหรับมือถือเป็นหลัก)
+-->
+
+<div class="scanner-page animate-in">
+  
+  <!-- ส่วนหัว -->
+  <div class="scanner-header">
+    <div class="scanner-header-icon">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+      </svg>
+    </div>
+    <h2>นำเข้าข้อมูลทรัพย์สิน</h2>
+    <p class="scanner-subtitle">สแกน QR Code จากครุภัณฑ์เพื่อดึงข้อมูลอัตโนมัติ</p>
+  </div>
+
+  <!-- ส่วนแสดงกล้องสแกน QR -->
+  <div class="scanner-container-card">
+    <div id="qr-reader" class="qr-reader"></div>
+    <div id="qr-status" class="qr-status status-idle">📱 พร้อมสแกน QR Code</div>
+    
+    <div class="scanner-buttons">
+      <button id="start-camera-btn" class="scanner-btn scanner-btn-primary" onclick="startScannerCamera()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        เปิดกล้องสแกน
+      </button>
+      <button id="stop-camera-btn" class="scanner-btn scanner-btn-danger" style="display:none" onclick="stopScannerCamera()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        ปิดกล้อง
+      </button>
+      <button class="scanner-btn scanner-btn-secondary" onclick="uploadScannerImage()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        เลือกรูป QR
+      </button>
+    </div>
+    <input type="file" id="qr-file-input" accept="image/*" style="display:none">
+  </div>
+
+  <!-- ฟอร์มแสดงข้อมูลที่ดึงได้ -->
+  <div class="scanner-form-card" id="scanner-form-card" style="display:none;">
+    <div class="form-header">
+      <div class="form-header-icon success-bg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <h3>ข้อมูลทรัพย์สิน</h3>
+        <p id="form-status" class="form-status">กรุณาตรวจสอบความถูกต้อง</p>
+      </div>
+    </div>
+
+    <!-- แจ้งเตือนข้อมูลซ้ำ -->
+    <div id="duplicate-alert" class="duplicate-alert" style="display:none;">
+      <div class="duplicate-icon">⚠️</div>
+      <div>
+        <strong>ข้อมูลซ้ำ!</strong><br>
+        <span id="duplicate-message">เลขครุภัณฑ์นี้ถูกบันทึกแล้ว</span>
+      </div>
+    </div>
+
+    <form id="scanner-asset-form">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label>เลขครุภัณฑ์</label>
+          <input type="text" id="scan-f1" readonly class="readonly-field">
+        </div>
+        
+        <div class="form-field full-width">
+          <label>ชื่อประเภทหลัก</label>
+          <input type="text" id="scan-f3" readonly class="readonly-field">
+        </div>
+        
+        <div class="form-field full-width">
+          <label>ชื่อประเภทรอง</label>
+          <input type="text" id="scan-f4" readonly class="readonly-field">
+        </div>
+
+        <div class="form-field">
+          <label>ชื่อรายการ</label>
+          <input type="text" id="scan-f5" readonly class="readonly-field">
+        </div>
+        
+        <div class="form-field">
+          <label>ชื่อรายการย่อย</label>
+          <input type="text" id="scan-f6" readonly class="readonly-field">
+        </div>
+
+        <div class="form-field">
+          <label>ยี่ห้อ</label>
+          <input type="text" id="scan-f7" readonly class="readonly-field">
+        </div>
+        
+        <div class="form-field">
+          <label>รุ่น</label>
+          <input type="text" id="scan-f8" readonly class="readonly-field">
+        </div>
+
+        <div class="form-field full-width">
+          <label>เลขที่หนังสือสำคัญ/เลขทะเบียน (S/N)</label>
+          <input type="text" id="scan-f9" readonly class="readonly-field">
+        </div>
+
+        <div class="form-field full-width">
+          <label>ฝ่าย/กลุ่มงาน</label>
+          <input type="text" id="scan-f-dept" class="editable-field" placeholder="กรอกชื่อฝ่าย/กลุ่มงาน">
+        </div>
+
+        <div class="form-field">
+          <label>สถานะทรัพย์สิน</label>
+          <input type="text" id="scan-f19" class="editable-field" placeholder="ปกติ / ชำรุด / รอจำหน่าย">
+        </div>
+        
+        <div class="form-field">
+          <label>ที่ตั้งทรัพย์สิน</label>
+          <input type="text" id="scan-f20" class="editable-field" placeholder="สถานที่ตั้ง">
+        </div>
+      </div>
+
+      <div id="scan-hidden-fields">
+        <input type="hidden" id="scan-f2">
+        <input type="hidden" id="scan-f10">
+        <input type="hidden" id="scan-f11">
+        <input type="hidden" id="scan-f12">
+        <input type="hidden" id="scan-f13">
+        <input type="hidden" id="scan-f15">
+        <input type="hidden" id="scan-url">
+        <input type="hidden" id="scan-date">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="scanner-save-btn" class="scanner-save-btn" onclick="submitScannerData()" disabled>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+          </svg>
+          บันทึกข้อมูล
+        </button>
+        <button type="button" class="scanner-reset-btn" onclick="resetScannerForm()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          ล้างข้อมูล / สแกนใหม่
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
