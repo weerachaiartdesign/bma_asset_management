@@ -1,7 +1,8 @@
-<!-- version 00056 -->
+<!-- version 00057 -->
 <!-- 
   ไฟล์: settings-scanner.html
   หน้าที่: หน้านำเข้าข้อมูลทรัพย์สินด้วย QR Code (สำหรับมือถือเป็นหลัก)
+   ปรับปรุง: จัดลำดับฟอร์มให้ตรงกับ index-assets_BMA.html
 -->
 
 <div class="scanner-page animate-in">
@@ -13,7 +14,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
       </svg>
     </div>
-    <h2>นำเข้าข้อมูลทรัพย์สิน</h2>
+    <h2>ระบบนำเข้าข้อมูลทรัพย์สิน กทม.</h2>
     <p class="scanner-subtitle">สแกน QR Code จากครุภัณฑ์เพื่อดึงข้อมูลอัตโนมัติ</p>
   </div>
 
@@ -65,94 +66,266 @@
       <div class="duplicate-icon">⚠️</div>
       <div>
         <strong>ข้อมูลซ้ำ!</strong><br>
-        <span id="duplicate-message">เลขครุภัณฑ์นี้ถูกบันทึกแล้ว</span>
+        <span id="duplicate-message">เลขครุภัณฑ์นี้ถูกบันทึกในระบบแล้ว<br>ไม่สามารถบันทึกซ้ำได้</span>
       </div>
     </div>
 
     <form id="scanner-asset-form">
-      <div class="form-grid">
-        <div class="form-field full-width">
-          <label>เลขครุภัณฑ์</label>
-          <input type="text" id="scan-f1" readonly class="readonly-field">
-        </div>
-        
-        <div class="form-field full-width">
-          <label>ชื่อประเภทหลัก</label>
-          <input type="text" id="scan-f3" readonly class="readonly-field">
-        </div>
-        
-        <div class="form-field full-width">
-          <label>ชื่อประเภทรอง</label>
-          <input type="text" id="scan-f4" readonly class="readonly-field">
-        </div>
+      
+      <!-- ส่วนที่ 1: ข้อมูลประเภททรัพย์สิน -->
+      <div class="group-label">📁 ข้อมูลประเภททรัพย์สิน</div>
+      <div class="form-field full-width">
+        <label>เลขครุภัณฑ์</label>
+        <input type="text" id="scan-f1" readonly class="readonly-field" placeholder="รอการสแกน...">
+      </div>
+      <div class="form-field full-width">
+        <label>ชื่อประเภทหลัก</label>
+        <input type="text" id="scan-f3" readonly class="readonly-field">
+      </div>
+      <div class="form-field full-width">
+        <label>ชื่อประเภทรอง</label>
+        <input type="text" id="scan-f4" readonly class="readonly-field">
+      </div>
 
+      <!-- ส่วนที่ 2: รายละเอียดครุภัณฑ์ -->
+      <div class="group-label">🔧 รายละเอียดครุภัณฑ์</div>
+      <div class="form-row">
         <div class="form-field">
           <label>ชื่อรายการ</label>
           <input type="text" id="scan-f5" readonly class="readonly-field">
         </div>
-        
         <div class="form-field">
           <label>ชื่อรายการย่อย</label>
           <input type="text" id="scan-f6" readonly class="readonly-field">
         </div>
-
+      </div>
+      <div class="form-row">
         <div class="form-field">
           <label>ยี่ห้อ</label>
           <input type="text" id="scan-f7" readonly class="readonly-field">
         </div>
-        
         <div class="form-field">
           <label>รุ่น</label>
           <input type="text" id="scan-f8" readonly class="readonly-field">
         </div>
+      </div>
+      <div class="form-field full-width">
+        <label>เลขที่หนังสือสำคัญ/เลขทะเบียน (S/N)</label>
+        <input type="text" id="scan-f9" readonly class="readonly-field">
+      </div>
 
-        <div class="form-field full-width">
-          <label>เลขที่หนังสือสำคัญ/เลขทะเบียน (S/N)</label>
-          <input type="text" id="scan-f9" readonly class="readonly-field">
-        </div>
-
-        <div class="form-field full-width">
-          <label>ฝ่าย/กลุ่มงาน</label>
-          <input type="text" id="scan-f-dept" class="editable-field" placeholder="กรอกชื่อฝ่าย/กลุ่มงาน">
-        </div>
-
+      <!-- ส่วนที่ 3: ข้อมูลการได้มาและมูลค่าทรัพย์สิน -->
+      <div class="group-label">💰 ข้อมูลการได้มา และมูลค่าทรัพย์สิน</div>
+      <div class="form-field full-width">
+        <label>ประเภทการรับทรัพย์สิน</label>
+        <input type="text" id="scan-f10" readonly class="readonly-field">
+      </div>
+      <div class="form-row">
         <div class="form-field">
-          <label>สถานะทรัพย์สิน</label>
-          <input type="text" id="scan-f19" class="editable-field" placeholder="ปกติ / ชำรุด / รอจำหน่าย">
+          <label>วันที่รับครั้งแรก</label>
+          <input type="text" id="scan-f11" readonly class="readonly-field">
         </div>
-        
         <div class="form-field">
-          <label>ที่ตั้งทรัพย์สิน</label>
-          <input type="text" id="scan-f20" class="editable-field" placeholder="สถานที่ตั้ง">
+          <label>วันที่รับเข้าหน่วยงาน</label>
+          <input type="text" id="scan-f12" readonly class="readonly-field">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>อายุการใช้งาน (ปี)</label>
+          <input type="text" id="scan-f13" readonly class="readonly-field">
+        </div>
+        <div class="form-field">
+          <label>มูลค่าต้นทุนทรัพย์สิน</label>
+          <input type="text" id="scan-f15" readonly class="readonly-field">
         </div>
       </div>
 
+      <!-- ส่วนที่ 4: สถานะและที่ตั้ง -->
+      <div class="group-label">📍 สถานะและที่ตั้ง</div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>สถานะทรัพย์สิน</label>
+          <input type="text" id="scan-f19" readonly class="readonly-field">
+        </div>
+        <div class="form-field">
+          <label>ที่ตั้งทรัพย์สิน</label>
+          <input type="text" id="scan-f20" readonly class="readonly-field">
+        </div>
+      </div>
+      <div class="form-field full-width">
+        <label>ฝ่าย/กลุ่มงาน</label>
+        <input type="text" id="scan-f-dept" class="editable-field" placeholder="กรอกชื่อฝ่าย/กลุ่มงาน">
+      </div>
+
+      <!-- ส่วนข้อมูลเบื้องหลัง (ซ่อนไว้) -->
       <div id="scan-hidden-fields">
         <input type="hidden" id="scan-f2">
-        <input type="hidden" id="scan-f10">
-        <input type="hidden" id="scan-f11">
-        <input type="hidden" id="scan-f12">
-        <input type="hidden" id="scan-f13">
-        <input type="hidden" id="scan-f15">
         <input type="hidden" id="scan-url">
         <input type="hidden" id="scan-date">
       </div>
 
-      <div class="form-actions">
-        <button type="button" id="scanner-save-btn" class="scanner-save-btn" onclick="submitScannerData()" disabled>
+      <!-- ปุ่มบันทึกและล้างข้อมูล (ขนาดเท่ากัน) -->
+      <div class="form-actions-equal">
+        <button type="button" id="scanner-save-btn" class="scanner-save-btn-equal" onclick="submitScannerData()" disabled>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
           </svg>
           บันทึกข้อมูล
         </button>
-        <button type="button" class="scanner-reset-btn" onclick="resetScannerForm()">
+        <button type="button" class="scanner-reset-btn-equal" onclick="resetScannerForm()">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
           ล้างข้อมูล / สแกนใหม่
         </button>
       </div>
+
     </form>
   </div>
 
 </div>
+
+<!-- CSS เพิ่มเติมสำหรับ form-row และปุ่มขนาดเท่ากัน -->
+<style>
+  /* ปรับปรุง CSS สำหรับฟอร์มใหม่ */
+  .group-label {
+    font-size: 15px;
+    color: #059669;
+    font-weight: 700;
+    margin: 25px 0 15px 0;
+    padding-left: 10px;
+    border-left: 3px solid #059669;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .form-field {
+    margin-bottom: 0;
+  }
+  
+  .form-field.full-width {
+    grid-column: span 2;
+    margin-bottom: 12px;
+  }
+  
+  .form-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 4px;
+  }
+  
+  .form-field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  
+  .form-field input:focus {
+    outline: none;
+    border-color: #059669;
+    ring: 2px solid #059669;
+  }
+  
+  .readonly-field {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+  
+  .editable-field {
+    background: white;
+  }
+  
+  /* ปุ่มขนาดเท่ากัน */
+  .form-actions-equal {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  
+  .scanner-save-btn-equal {
+    flex: 1;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .scanner-save-btn-equal:hover {
+    background: #047857;
+  }
+  
+  .scanner-save-btn-equal:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+  }
+  
+  .scanner-reset-btn-equal {
+    flex: 1;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .scanner-reset-btn-equal:hover {
+    background: #e2e8f0;
+  }
+  
+  /* ปรับปรุง duplicate alert */
+  .duplicate-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+  }
+  
+  .duplicate-icon {
+    font-size: 24px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    .form-row {
+      gap: 8px;
+    }
+    .form-field input {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .group-label {
+      font-size: 13px;
+      margin: 20px 0 10px 0;
+    }
+  }
+</style>
