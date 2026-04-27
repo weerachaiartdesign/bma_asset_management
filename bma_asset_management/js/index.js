@@ -146,45 +146,99 @@ function renderSettingsPage() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
     
-    // เปลี่ยนหัวข้อ
     const titleEl = document.getElementById('page-title');
     if (titleEl) titleEl.innerText = 'ตั้งค่าระบบ';
     
-    // สร้างเนื้อหาหน้าตั้งค่า
-    mainContent.innerHTML = `
-        <div class="p-8 animate-in">
-            <div class="max-w-4xl mx-auto">
-                <!-- การ์ดหลัก -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
-                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">ตั้งค่าระบบ</h3>
-                                <p class="text-xs text-slate-400">จัดการการตั้งค่าต่างๆ ของระบบ</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-8 text-center">
-                        <div class="inline-flex items-center justify-center w-20 h-20 bg-slate-100 rounded-2xl mb-4">
-                            <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h4 class="text-md font-semibold text-slate-600 mb-2">กำลังอยู่ในระหว่างการพัฒนา</h4>
-                        <p class="text-sm text-slate-400">หน้าตั้งค่าระบบกำลังอยู่ระหว่างการพัฒนา<br>เร็วๆ นี้จะมีการอัปเดตเพิ่มเติม</p>
-                    </div>
+    // โหลดหน้า scanner
+    fetch('settings-scanner.html')
+        .then(response => response.text())
+        .then(html => {
+            mainContent.innerHTML = html;
+            mainContent.scrollTop = 0;
+            
+            // โหลด CSS เพิ่มเติมสำหรับ scanner (ถ้ายังไม่มี)
+            loadScannerStyles();
+            
+            // เริ่มต้นกล้องอัตโนมัติ (สะดวกสำหรับมือถือ)
+            setTimeout(() => {
+                if (typeof startScannerCamera === 'function') {
+                    startScannerCamera();
+                }
+            }, 500);
+        })
+        .catch(err => {
+            mainContent.innerHTML = `
+                <div class="p-8 text-center">
+                    <div class="text-red-500 mb-4">⚠️ ไม่สามารถโหลดหน้านำเข้าข้อมูล</div>
+                    <button onclick="renderSettingsPage()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg">ลองอีกครั้ง</button>
                 </div>
-            </div>
-        </div>
-    `;
-    mainContent.scrollTop = 0;
+            `;
+            console.error(err);
+        });
+}
+
+function loadScannerStyles() {
+    // ตรวจสอบว่ามี style สำหรับ scanner ไหม
+    if (!document.getElementById('scanner-styles')) {
+        const style = document.createElement('style');
+        style.id = 'scanner-styles';
+        style.textContent = `
+            /* Scanner Page Styles */
+            .scanner-page { max-width: 600px; margin: 0 auto; padding: 16px; }
+            .scanner-header { text-align: center; margin-bottom: 24px; }
+            .scanner-header-icon { width: 56px; height: 56px; background: #064e3b; border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: #10b981; }
+            .scanner-header h2 { font-size: 20px; font-weight: 700; color: #1e293b; }
+            .scanner-subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+            
+            .scanner-container-card, .scanner-form-card { background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+            .qr-reader { width: 100%; border-radius: 16px; overflow: hidden; display: none; }
+            .qr-reader video { border-radius: 16px; }
+            
+            .qr-status { text-align: center; padding: 12px; font-size: 13px; font-weight: 600; border-radius: 12px; margin: 12px 0; }
+            .status-idle { background: #f1f5f9; color: #475569; }
+            .status-loading { background: #fef3c7; color: #d97706; }
+            .status-scanning { background: #d1fae5; color: #065f46; }
+            .status-success { background: #a7f3d0; color: #064e3b; }
+            .status-error { background: #fee2e2; color: #dc2626; }
+            
+            .scanner-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+            .scanner-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; transition: all 0.2s; }
+            .scanner-btn-primary { background: #059669; color: white; }
+            .scanner-btn-primary:hover { background: #047857; }
+            .scanner-btn-danger { background: #ef4444; color: white; }
+            .scanner-btn-danger:hover { background: #dc2626; }
+            .scanner-btn-secondary { background: #e2e8f0; color: #1e293b; }
+            .scanner-btn-secondary:hover { background: #cbd5e1; }
+            
+            .form-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+            .form-header-icon { width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+            .success-bg { background: #d1fae5; color: #059669; }
+            .form-status { font-size: 12px; color: #64748b; margin-top: 4px; }
+            
+            .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+            .form-field.full-width { grid-column: span 2; }
+            .form-field label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+            .form-field input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; transition: all 0.2s; }
+            .form-field input:focus { outline: none; border-color: #059669; ring: 2px solid #059669; }
+            .readonly-field { background: #f8fafc; color: #1e293b; }
+            .editable-field { background: white; }
+            
+            .duplicate-alert { display: flex; align-items: center; gap: 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 16px; padding: 12px 16px; margin-bottom: 20px; }
+            .duplicate-icon { font-size: 24px; }
+            
+            .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+            .scanner-save-btn { flex: 2; background: #059669; color: white; border: none; border-radius: 14px; padding: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+            .scanner-save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+            .scanner-reset-btn { flex: 1; background: #f1f5f9; color: #475569; border: none; border-radius: 14px; padding: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+            
+            @media (max-width: 640px) {
+                .form-grid { gap: 12px; }
+                .scanner-page { padding: 12px; }
+                .scanner-container-card, .scanner-form-card { padding: 16px; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 // ==================== PAGE RENDERING ====================
