@@ -1,8 +1,9 @@
 /**
- * version 00055
+ * version 00056
  * ไฟล์: index.js
  * หน้าที่: จัดการการแสดงผลข้อมูลทรัพย์สินในรูปแบบตาราง (Desktop) และการ์ด (Mobile)
  * รองรับ: Pagination (25/50/100/ทั้งหมด), การค้นหาแบบ Real-time, Responsive Desktop/Mobile
+ * เพิ่มเติม: ระบบตั้งค่า (Settings) พร้อมปุ่มรูปเฟือง
  */
 
 let globalData = [];
@@ -14,7 +15,10 @@ let searchTimeout = null;
 
 // ==================== INITIALIZATION ====================
 
-window.onload = fetchData;
+window.onload = () => {
+    fetchData();
+    loadSidebarState();
+};
 
 window.onresize = () => {
     const newIsMobile = window.innerWidth < 768;
@@ -30,14 +34,11 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
     
-    // Toggle class hidden-sidebar (ซ่อน/แสดง)
     sidebar.classList.toggle('hidden-sidebar');
     
-    // เก็บสถานะการซ่อนลง localStorage
     const isHidden = sidebar.classList.contains('hidden-sidebar');
     localStorage.setItem('sidebarHidden', isHidden);
     
-    // ปรับขนาดกราฟหลังจาก sidebar เปลี่ยนขนาด
     setTimeout(() => {
         Object.values(charts).forEach(chart => {
             if (chart && typeof chart.resize === 'function') {
@@ -48,7 +49,6 @@ function toggleSidebar() {
     }, 350);
 }
 
-// โหลดสถานะ sidebar ที่เคยซ่อนไว้
 function loadSidebarState() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
@@ -58,12 +58,6 @@ function loadSidebarState() {
         sidebar.classList.add('hidden-sidebar');
     }
 }
-
-// แก้ไข window.onload ให้เรียก loadSidebarState
-window.onload = () => {
-    fetchData();
-    loadSidebarState();
-};
 
 // ==================== DATA FETCHING ====================
 
@@ -94,7 +88,12 @@ async function fetchData() {
 function switchTab(tabId) {
     currentTab = tabId;
     updateNavUI(tabId);
-    renderCurrentPage();
+    
+    if (tabId === 'settings') {
+        renderSettingsPage();
+    } else {
+        renderCurrentPage();
+    }
 }
 
 function updateNavUI(tabId) {
@@ -110,14 +109,82 @@ function updateNavUI(tabId) {
         if (tabId === 'dashboard') {
             mDash.classList.replace('text-white/50', 'text-white');
             mInv.classList.replace('text-white', 'text-white/50');
-        } else {
+        } else if (tabId === 'inventory') {
             mInv.classList.replace('text-white/50', 'text-white');
             mDash.classList.replace('text-white', 'text-white/50');
         }
     }
     
+    // อัปเดตหัวข้อ (ยกเว้น settings จะจัดการใน renderSettingsPage)
+    if (tabId !== 'settings') {
+        const titleEl = document.getElementById('page-title');
+        if (titleEl) titleEl.innerText = tabId === 'dashboard' ? 'ภาพรวมระบบ' : 'รายการทรัพย์สิน';
+    }
+}
+
+// ==================== SETTINGS FUNCTIONS ====================
+
+function toggleSettingsMenu() {
+    const dropdown = document.getElementById('settingsDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+function openSettings() {
+    // ปิด dropdown
+    const dropdown = document.getElementById('settingsDropdown');
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+    }
+    
+    // เปลี่ยนไปหน้าตั้งค่า
+    switchTab('settings');
+}
+
+function renderSettingsPage() {
+    const mainContent = document.getElementById('main-content');
+    if (!mainContent) return;
+    
+    // เปลี่ยนหัวข้อ
     const titleEl = document.getElementById('page-title');
-    if (titleEl) titleEl.innerText = tabId === 'dashboard' ? 'ภาพรวมระบบ' : 'รายการทรัพย์สิน';
+    if (titleEl) titleEl.innerText = 'ตั้งค่าระบบ';
+    
+    // สร้างเนื้อหาหน้าตั้งค่า
+    mainContent.innerHTML = `
+        <div class="p-8 animate-in">
+            <div class="max-w-4xl mx-auto">
+                <!-- การ์ดหลัก -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">ตั้งค่าระบบ</h3>
+                                <p class="text-xs text-slate-400">จัดการการตั้งค่าต่างๆ ของระบบ</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 text-center">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-slate-100 rounded-2xl mb-4">
+                            <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-md font-semibold text-slate-600 mb-2">กำลังอยู่ในระหว่างการพัฒนา</h4>
+                        <p class="text-sm text-slate-400">หน้าตั้งค่าระบบกำลังอยู่ระหว่างการพัฒนา<br>เร็วๆ นี้จะมีการอัปเดตเพิ่มเติม</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    mainContent.scrollTop = 0;
 }
 
 // ==================== PAGE RENDERING ====================
@@ -139,7 +206,7 @@ async function renderCurrentPage() {
                     isMobile ? renderMobileDashboard(globalData) : renderDesktopDashboard(globalData);
                 }
             } else {
-                executeFilter(); // ใช้ executeFilter แทน filterTable เพื่อโหลดข้อมูลทันที
+                executeFilter();
             }
         }, 150);
 
@@ -150,13 +217,8 @@ async function renderCurrentPage() {
 
 // ==================== FILTER & PAGINATION ====================
 
-/**
- * ฟังก์ชันหลักสำหรับกรองและแบ่งหน้าข้อมูล
- * @param {boolean} isSearchEvent - true = มาจากการพิมพ์ค้นหา (debounce), false = มาจากการเปลี่ยน dropdown
- */
 function filterTable(isSearchEvent = false) {
     if (isSearchEvent) {
-        // Debounce สำหรับการค้นหา
         if (searchTimeout) clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             executeFilter();
@@ -166,11 +228,7 @@ function filterTable(isSearchEvent = false) {
     }
 }
 
-/**
- * ฟังก์ชัน执行การกรองและแสดงผลจริง
- */
 function executeFilter() {
-    // 1. อ่านค่า query จากการค้นหา (แยกตามอุปกรณ์)
     const query = (() => {
         if (isMobile) {
             return document.getElementById('searchInputMobile')?.value.toLowerCase() || "";
@@ -179,17 +237,14 @@ function executeFilter() {
         }
     })();
     
-    // 2. อ่านค่า rowsPerPage จาก dropdown (แยกตามอุปกรณ์)
     const rowSelect = isMobile 
         ? document.getElementById('rowSelectMobile') 
         : document.getElementById('rowSelectDesktop');
     
     if (rowSelect) {
         rowsPerPage = rowSelect.value === 'All' ? globalData.length : parseInt(rowSelect.value);
-        console.log(`[executeFilter] isMobile=${isMobile}, rowsPerPage=${rowsPerPage}, query="${query}"`); // debug log
     }
 
-    // 3. กรองข้อมูลตามคำค้นหา
     const filtered = globalData.filter(item => 
         (item.type && item.type.toLowerCase().includes(query)) || 
         (item.id && item.id.toLowerCase().includes(query)) ||
@@ -201,10 +256,8 @@ function executeFilter() {
         (item.location && item.location.toLowerCase().includes(query))
     );
     
-    // 4. ตัดข้อมูลตามจำนวนที่เลือก (Pagination)
     const paginatedData = filtered.slice(0, rowsPerPage);
 
-    // 5. แสดงผลตามอุปกรณ์
     if (isMobile) {
         if (typeof renderMobileTable === 'function') renderMobileTable(paginatedData);
         const countElM = document.getElementById('show-count-m');
@@ -218,13 +271,6 @@ function executeFilter() {
 
 // ==================== HELPER FUNCTIONS ====================
 
-/**
- * ฟังก์ชันจัดกลุ่มและเรียงลำดับข้อมูลสำหรับกราฟ
- * @param {Array} data - ข้อมูลทรัพย์สิน
- * @param {string} key - ชื่อฟิลด์ที่ต้องการจัดกลุ่ม (เช่น 'type', 'dept')
- * @param {number} limit - จำนวนสูงสุดที่ต้องการแสดง
- * @returns {Object} - Object ที่มี key เป็นชื่อกลุ่ม และ value เป็นจำนวน
- */
 function groupAndSortData(data, key, limit) {
     const counts = data.reduce((acc, curr) => {
         const val = curr[key] || 'ไม่ระบุ';
@@ -233,3 +279,15 @@ function groupAndSortData(data, key, limit) {
     }, {});
     return Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit));
 }
+
+// ==================== CLICK OUTSIDE DROPDOWN ====================
+
+// ปิด dropdown เมื่อคลิกที่อื่น
+document.addEventListener('click', function(event) {
+    const settingsBtn = document.getElementById('settingsBtn');
+    const dropdown = document.getElementById('settingsDropdown');
+    
+    if (settingsBtn && dropdown && !settingsBtn.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
