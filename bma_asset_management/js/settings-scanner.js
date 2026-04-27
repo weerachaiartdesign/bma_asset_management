@@ -184,7 +184,6 @@ async function submitScannerData() {
         });
         formData.url = document.getElementById('scan-url').value;
         formData.scan_date = document.getElementById('scan-date').value;
-
         formData.source = 'scanner';
         
         const response = await fetch(GAS_API_URL, { 
@@ -194,11 +193,13 @@ async function submitScannerData() {
         const result = await response.json();
         
         showScannerModal(result.message, result.success ? "success" : "error", () => {
-            if (result.success) resetScannerForm();
+            if (result.success) {
+                resetScannerForm();  // เรียกฟังก์ชันล้างข้อมูล
+            }
         });
         
     } catch (error) {
-        showScannerModal("เกิดข้อผิดพลาดในการเชื่อมต่อ", "error");
+        showScannerModal("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + error.message, "error");
     } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = originalText;
@@ -206,23 +207,34 @@ async function submitScannerData() {
 }
 
 function resetScannerForm() {
-    // รีเซ็ตฟอร์ม
-    document.getElementById('scanner-asset-form').reset();
-    document.getElementById('scanner-form-card').style.display = 'none';
-    document.getElementById('duplicate-alert').style.display = 'none';
+    // ล้างค่าทั้งหมดในฟอร์ม
+    const form = document.getElementById('scanner-asset-form');
+    if (form) form.reset();
     
-    // รีเซ็ตสถานะ
+    // ซ่อนฟอร์มการ์ด
+    const formCard = document.getElementById('scanner-form-card');
+    if (formCard) formCard.style.display = 'none';
+    
+    // ซ่อนแจ้งเตือนข้อมูลซ้ำ
+    const duplicateAlert = document.getElementById('duplicate-alert');
+    if (duplicateAlert) duplicateAlert.style.display = 'none';
+    
+    // รีเซ็ตสถานะตัวแปร
     scannerIsDuplicate = false;
     scannerCurrentData = {};
     
+    // รีเซ็ตสถานะข้อความ
     const statusDiv = document.getElementById('qr-status');
-    statusDiv.innerText = "📱 พร้อมสแกน QR Code";
-    statusDiv.className = "qr-status status-idle";
+    if (statusDiv) {
+        statusDiv.innerText = "📱 พร้อมสแกน QR Code";
+        statusDiv.className = "qr-status status-idle";
+    }
     
-    // เปิดกล้องอีกครั้งอัตโนมัติ (สะดวกสำหรับมือถือ)
-    setTimeout(() => {
-        startScannerCamera();
-    }, 500);
+    // รีเซ็ตปุ่มบันทึกให้เป็น disabled จนกว่าจะสแกนใหม่
+    const saveBtn = document.getElementById('scanner-save-btn');
+    if (saveBtn) saveBtn.disabled = true;
+    
+    // ✅ ไม่เปิดกล้องอัตโนมัติ รอให้ผู้ใช้กดเปิดกล้องเอง
 }
 
 function showScannerModal(message, type = 'success', callback = null) {
