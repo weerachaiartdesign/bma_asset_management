@@ -160,11 +160,11 @@ function renderSettingsPage() {
             loadScannerStyles();
             
             // เริ่มต้นกล้องอัตโนมัติ (สะดวกสำหรับมือถือ)
-            setTimeout(() => {
-                if (typeof startScannerCamera === 'function') {
-                    startScannerCamera();
-                }
-            }, 500);
+            // setTimeout(() => {
+            //    if (typeof startScannerCamera === 'function') {
+            //        startScannerCamera();
+            //    }
+            //}, 500);
         })
         .catch(err => {
             mainContent.innerHTML = `
