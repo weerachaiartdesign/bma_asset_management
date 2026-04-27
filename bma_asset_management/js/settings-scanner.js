@@ -1,7 +1,8 @@
 /**
- * version 00056
+ * version 00057
  * ไฟล์: settings-scanner.js
  * หน้าที่: จัดการการสแกน QR Code และนำเข้าข้อมูลทรัพย์สิน
+ * แก้ไข: ปรับปรุงการล้างฟอร์มและการทำงานของ Modal
  */
 
 let scannerHtml5QrCode = null;
@@ -53,9 +54,9 @@ async function stopScannerCamera() {
     const startBtn = document.getElementById('start-camera-btn');
     const stopBtn = document.getElementById('stop-camera-btn');
     
-    readerDiv.style.display = 'none';
-    stopBtn.style.display = 'none';
-    startBtn.style.display = 'flex';
+    if (readerDiv) readerDiv.style.display = 'none';
+    if (stopBtn) stopBtn.style.display = 'none';
+    if (startBtn) startBtn.style.display = 'flex';
 }
 
 function uploadScannerImage() {
@@ -90,13 +91,16 @@ async function handleScannerResult(url) {
     const formCard = document.getElementById('scanner-form-card');
     const duplicateAlert = document.getElementById('duplicate-alert');
     const saveBtn = document.getElementById('scanner-save-btn');
+    const resetBtn = document.getElementById('scanner-reset-btn');
     
-    statusDiv.innerText = "⌛ กำลังดึงข้อมูลจากระบบ กทม...";
-    statusDiv.className = "qr-status status-loading";
+    if (statusDiv) {
+        statusDiv.innerText = "⌛ กำลังดึงข้อมูลจากระบบ กทม...";
+        statusDiv.className = "qr-status status-loading";
+    }
     
     // ซ่อนฟอร์มเก่าและแจ้งเตือน
-    formCard.style.display = 'none';
-    duplicateAlert.style.display = 'none';
+    if (formCard) formCard.style.display = 'none';
+    if (duplicateAlert) duplicateAlert.style.display = 'none';
     scannerIsDuplicate = false;
     
     try {
@@ -116,21 +120,29 @@ async function handleScannerResult(url) {
         await checkScannerDuplicate(result.f1);
         
         if (scannerIsDuplicate) {
-            statusDiv.innerText = "❌ ข้อมูลนี้ถูกบันทึกไปแล้ว ไม่สามารถบันทึกซ้ำได้";
-            statusDiv.className = "qr-status status-error";
-            formCard.style.display = 'block';
+            if (statusDiv) {
+                statusDiv.innerText = "❌ ข้อมูลนี้ถูกบันทึกไปแล้ว ไม่สามารถบันทึกซ้ำได้";
+                statusDiv.className = "qr-status status-error";
+            }
+            if (formCard) formCard.style.display = 'block';
             if (saveBtn) saveBtn.disabled = true;
+            if (resetBtn) resetBtn.style.display = 'flex';
         } else {
-            statusDiv.innerText = "✅ ดึงข้อมูลสำเร็จ กรุณาตรวจสอบและบันทึก";
-            statusDiv.className = "qr-status status-success";
-            formCard.style.display = 'block';
+            if (statusDiv) {
+                statusDiv.innerText = "✅ ดึงข้อมูลสำเร็จ กรุณาตรวจสอบและบันทึก";
+                statusDiv.className = "qr-status status-success";
+            }
+            if (formCard) formCard.style.display = 'block';
             if (saveBtn) saveBtn.disabled = false;
+            if (resetBtn) resetBtn.style.display = 'flex';
         }
         
     } catch (err) {
-        statusDiv.innerText = "❌ ดึงข้อมูลล้มเหลว: " + err.message;
-        statusDiv.className = "qr-status status-error";
-        formCard.style.display = 'none';
+        if (statusDiv) {
+            statusDiv.innerText = "❌ ดึงข้อมูลล้มเหลว: " + err.message;
+            statusDiv.className = "qr-status status-error";
+        }
+        if (formCard) formCard.style.display = 'none';
     }
 }
 
@@ -140,8 +152,10 @@ function fillScannerForm(data) {
         const el = document.getElementById(`scan-${field}`);
         if (el && data[field]) el.value = data[field];
     });
-    document.getElementById('scan-url').value = data.url || '';
-    document.getElementById('scan-date').value = new Date().toLocaleString('th-TH');
+    const urlEl = document.getElementById('scan-url');
+    const dateEl = document.getElementById('scan-date');
+    if (urlEl) urlEl.value = data.url || '';
+    if (dateEl) dateEl.value = new Date().toLocaleString('th-TH');
 }
 
 async function checkScannerDuplicate(f1Value) {
@@ -154,7 +168,7 @@ async function checkScannerDuplicate(f1Value) {
             scannerIsDuplicate = true;
             const alertDiv = document.getElementById('duplicate-alert');
             const msgSpan = document.getElementById('duplicate-message');
-            if (msgSpan) msgSpan.innerText = `เลขครุภัณฑ์ ${f1Value} ถูกบันทึกในระบบแล้ว`;
+            if (msgSpan) msgSpan.innerText = `เลขครุภัณฑ์ ${f1Value} ถูกบันทึกในระบบแล้ว ไม่สามารถบันทึกซ้ำได้`;
             if (alertDiv) alertDiv.style.display = 'flex';
         }
     } catch (e) {
@@ -164,6 +178,8 @@ async function checkScannerDuplicate(f1Value) {
 
 async function submitScannerData() {
     const saveBtn = document.getElementById('scanner-save-btn');
+    if (!saveBtn) return;
+    
     const originalText = saveBtn.innerHTML;
     
     saveBtn.disabled = true;
@@ -182,8 +198,10 @@ async function submitScannerData() {
                 formData[key] = input.value;
             }
         });
-        formData.url = document.getElementById('scan-url').value;
-        formData.scan_date = document.getElementById('scan-date').value;
+        const urlEl = document.getElementById('scan-url');
+        const dateEl = document.getElementById('scan-date');
+        formData.url = urlEl ? urlEl.value : '';
+        formData.scan_date = dateEl ? dateEl.value : new Date().toLocaleString('th-TH');
         formData.source = 'scanner';
         
         console.log("กำลังส่งข้อมูล:", formData);
@@ -196,24 +214,9 @@ async function submitScannerData() {
         
         console.log("ผลลัพธ์จาก server:", result);
         
-        // ✅ แก้ไข: รอให้ modal ปิดก่อนแล้วค่อยล้างฟอร์ม
         showScannerModal(result.message, result.success ? "success" : "error", () => {
             if (result.success) {
                 resetScannerForm();
-                // ✅ เพิ่ม: แจ้งเตือนเพิ่มเติมว่าสามารถสแกนรายการถัดไปได้
-                setTimeout(() => {
-                    const statusDiv = document.getElementById('qr-status');
-                    if (statusDiv) {
-                        statusDiv.innerText = "✅ บันทึกสำเร็จ! พร้อมสแกนรายการถัดไป";
-                        statusDiv.className = "qr-status status-success";
-                        setTimeout(() => {
-                            if (statusDiv.innerText.includes("สำเร็จ")) {
-                                statusDiv.innerText = "📱 พร้อมสแกน QR Code";
-                                statusDiv.className = "qr-status status-idle";
-                            }
-                        }, 2000);
-                    }
-                }, 500);
             }
         });
         
@@ -227,9 +230,13 @@ async function submitScannerData() {
 }
 
 function resetScannerForm() {
+    console.log("เริ่มล้างฟอร์ม...");
+    
     // ล้างค่าทั้งหมดในฟอร์ม
     const form = document.getElementById('scanner-asset-form');
-    if (form) form.reset();
+    if (form) {
+        form.reset();
+    }
     
     // ล้างค่าด้วยตนเอง (เผื่อ reset ไม่ทำงาน)
     const allInputs = document.querySelectorAll('#scanner-asset-form input');
@@ -241,11 +248,15 @@ function resetScannerForm() {
     
     // ซ่อนฟอร์มการ์ด
     const formCard = document.getElementById('scanner-form-card');
-    if (formCard) formCard.style.display = 'none';
+    if (formCard) {
+        formCard.style.display = 'none';
+    }
     
     // ซ่อนแจ้งเตือนข้อมูลซ้ำ
     const duplicateAlert = document.getElementById('duplicate-alert');
-    if (duplicateAlert) duplicateAlert.style.display = 'none';
+    if (duplicateAlert) {
+        duplicateAlert.style.display = 'none';
+    }
     
     // รีเซ็ตสถานะตัวแปร
     scannerIsDuplicate = false;
@@ -264,7 +275,7 @@ function resetScannerForm() {
         saveBtn.disabled = true;
     }
     
-    // ✅ เพิ่ม: รีเซ็ตปุ่มเปิดกล้องให้กลับมาแสดง
+    // รีเซ็ตปุ่มเปิดกล้องให้กลับมาแสดง
     const startBtn = document.getElementById('start-camera-btn');
     const stopBtn = document.getElementById('stop-camera-btn');
     const readerDiv = document.getElementById('qr-reader');
@@ -273,17 +284,22 @@ function resetScannerForm() {
     if (stopBtn) stopBtn.style.display = 'none';
     if (readerDiv) readerDiv.style.display = 'none';
     
-    // ✅ เพิ่ม: ปิดกล้องถ้ากำลังเปิดอยู่
+    // ปิดกล้องถ้ากำลังเปิดอยู่
     if (scannerHtml5QrCode && scannerHtml5QrCode.isScanning) {
         stopScannerCamera();
     }
     
-    // ล้าง console (optional)
-    console.log("ฟอร์มถูกล้างเรียบร้อย");
+    // ล้าง URL ที่เก็บไว้
+    const urlInput = document.getElementById('scan-url');
+    if (urlInput) urlInput.value = '';
+    
+    console.log("ล้างฟอร์มเรียบร้อย");
 }
 
 function showScannerModal(message, type = 'success', callback = null) {
-    // ใช้ modal เดิมที่มีในระบบ หรือสร้างใหม่
+    console.log("แสดง Modal:", message, type);
+    
+    // ใช้ modal จาก index.html
     const modal = document.getElementById('customModal');
     const text = document.getElementById('modalText');
     const icon = document.getElementById('modalIcon');
@@ -293,14 +309,22 @@ function showScannerModal(message, type = 'success', callback = null) {
         icon.innerText = type === 'success' ? '✅' : '❌';
         modal.style.display = 'flex';
         
-        const closeModalFn = () => {
-            modal.style.display = 'none';
-            if (callback) callback();
-        };
-        
-        const modalBtn = document.querySelector('#customModal .modal-btn');
+        // หาปุ่มปิด modal
+        const modalBtn = modal.querySelector('.modal-btn');
         if (modalBtn) {
-            modalBtn.onclick = closeModalFn;
+            // ลบ event เก่าออกก่อน
+            const newBtn = modalBtn.cloneNode(true);
+            modalBtn.parentNode.replaceChild(newBtn, modalBtn);
+            newBtn.onclick = () => {
+                modal.style.display = 'none';
+                if (callback) callback();
+            };
+        } else {
+            // ถ้าไม่มีปุ่ม ให้ปิดหลังจาก 2 วินาที
+            setTimeout(() => {
+                modal.style.display = 'none';
+                if (callback) callback();
+            }, 2000);
         }
     } else {
         alert(message);
